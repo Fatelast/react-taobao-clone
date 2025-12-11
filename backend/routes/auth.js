@@ -18,7 +18,10 @@ router.post('/register', async (ctx) => {
         await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        ctx.body = { token };
+        ctx.body = { 
+            token, 
+            user: { id: user._id, username: user.username, email: user.email } 
+        };
     } catch (err) {
         ctx.throw(500, err.message);
     }
@@ -35,7 +38,10 @@ router.post('/login', async (ctx) => {
         if (!isMatch) return ctx.body = { msg: 'Invalid credentials' };
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        ctx.body = { token };
+        ctx.body = { 
+            token, 
+            user: { id: user._id, username: user.username, email: user.email } 
+        };
     } catch (err) {
         ctx.throw(500, err.message);
     }
