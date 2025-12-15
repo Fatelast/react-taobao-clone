@@ -1,11 +1,20 @@
 const Router = require('koa-router');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
-//router.post处理POST请求。ctx.request.body从bodyparser获取数据。
-// 注册：检查用户是否存在，保存新用户，生成JWT token（签名用secret，过期1小时）。
-// 登录：找用户，比较密码，生成token。错误用ctx.throw
 const router = new Router();
+
+// 验证 Token 并返回当前用户信息
+router.get('/me', auth, async (ctx) => {
+    try {
+        const user = await User.findById(ctx.state.user.id).select('-password');
+        if (!user) return ctx.throw(404, 'User not found');
+        ctx.body = user;
+    } catch (err) {
+        ctx.throw(500, err.message);
+    }
+});
 
 // 注册
 router.post('/register', async (ctx) => {

@@ -3,21 +3,22 @@ import { Form, Input, Button, message, Card, Typography } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TaobaoCircleOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const { Title, Text } = Typography;
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
       const res = await api.post('/register', values);
-      localStorage.setItem('token', res.data.token); // 存token
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      login(res.data.token, res.data.user);
       message.success('注册成功');
-      navigate('/products');
+      navigate('/');
     } catch (err) {
       console.error(err);
       message.error(err.response?.data?.msg || '注册失败');

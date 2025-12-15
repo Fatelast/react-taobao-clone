@@ -16,7 +16,24 @@ router.get('/', async (ctx) => {
 });
 
 // 添加到购物车（已有）
-router.post('/add', async (ctx) => { /* 你之前写的代码 */ });
+router.post('/add', async (ctx) => {
+  const { productId, quantity } = ctx.request.body;
+  let cart = await Cart.findOne({ user: ctx.state.user.id });
+
+  if (!cart) {
+    cart = new Cart({ user: ctx.state.user.id, items: [] });
+  }
+
+  const item = cart.items.find(i => i.product.toString() === productId);
+  if (item) {
+    item.quantity += quantity;
+  } else {
+    cart.items.push({ product: productId, quantity });
+  }
+  
+  await cart.save();
+  ctx.body = cart;
+});
 
 // 修改数量
 router.put('/update', async (ctx) => {

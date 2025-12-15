@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Carousel, Card, Row, Col, Typography, Space, Button, message } from 'antd';
-import { ShoppingCartOutlined, FireOutlined } from '@ant-design/icons';
+import { Carousel, Row, Col, Typography, Space, Button, message } from 'antd';
+import {  FireOutlined } from '@ant-design/icons';
 import api from '../utils/api';
-import { Link } from 'react-router-dom';
+import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -33,7 +33,6 @@ const Home = () => {
   const [hotProducts, setHotProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
 
   // 加载热门商品（这里直接取前 8 条）
   useEffect(() => {
@@ -50,24 +49,6 @@ const Home = () => {
     fetchHot();
   }, []);
 
-  const addToCartQuick = async (productId) => {
-    if (!token) {
-      message.info('请先登录');
-      navigate('/login');
-      return;
-    }
-
-    try {
-      await api.post('/cart/add', { productId: productId, quantity: 1 });
-      message.success('已加入购物车');
-    } catch (err) {
-      if (err.response && err.response.status === 401) {
-         message.error('请先登录');
-      } else {
-         message.error('加入失败');
-      }
-    }
-  };
 
   return (
     <div style={{ background: '#f5f5f5' }}>
@@ -114,69 +95,7 @@ const Home = () => {
           {hotProducts.map((product) => (
             <Col xs={24} sm={12} md={8} lg={6} xl={6} key={product._id} style={{ display: 'flex', justifyContent: 'center' }}>
               {/* xl={6} 意味着一行 4 个 (24/6=4) */}
-              <Card
-                hoverable
-                style={{ width: '100%', borderRadius: 12, overflow: 'hidden' }}
-                bodyStyle={{ padding: 12 }}
-                cover={
-                  <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', overflow: 'hidden', background: '#f5f5f5' }}>
-                    <Link to="/products">
-                      <img
-                        alt={product.name}
-                        src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'}
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/300x300?text=Error'; }}
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
-                          objectFit: 'cover',
-                          transition: 'transform 0.3s',
-                          mixBlendMode: 'multiply' // 尝试让白底图片融合，可选
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                      />
-                    </Link>
-                  </div>
-                }
-              >
-                <Link to="/products" style={{ color: 'inherit' }}>
-                  <div style={{ height: 44, overflow: 'hidden', marginBottom: 8 }}>
-                    <Text 
-                      style={{ 
-                        fontSize: 14, 
-                        lineHeight: '22px',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                      }}
-                    >
-                      {product.name}
-                    </Text>
-                  </div>
-                </Link>
-                
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                  <div>
-                    <Text type="danger" strong style={{ fontSize: 18 }}>
-                      <span style={{ fontSize: 12 }}>¥</span>{product.price?.toFixed(2)}
-                    </Text>
-                    <br />
-                    <Text delete type="secondary" style={{ fontSize: 12 }}>
-                      ¥{(product.price * 1.5).toFixed(2)}
-                    </Text>
-                  </div>
-                  <Button
-                    type="primary"
-                    shape="circle"
-                    icon={<ShoppingCartOutlined />}
-                    size="middle"
-                    onClick={(e) => {
-                      e.preventDefault(); // 阻止冒泡触发卡片点击（如果有的话）
-                      addToCartQuick(product._id);
-                    }}
-                  />
-                </div>
-              </Card>
+              <ProductCard product={product} />
             </Col>
           ))}
         </Row>

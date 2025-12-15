@@ -3,11 +3,13 @@ import { Form, Input, Button, message, Card, Typography, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, TaobaoCircleOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const { Title, Text } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 // ... (rest of the file until the anchor tag)
 // I will just replace the import and the anchor tag in one go or separate if needed. 
@@ -31,8 +33,7 @@ const Login = () => {
       // auth.js content: router.post('/login', ...)
       // So URL is http://localhost:5000/login. 
       
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user)); // Save user info
+      login(res.data.token,res.data.user)
       message.success('登录成功');
       navigate('/');
     } catch (err) {

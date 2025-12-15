@@ -1,7 +1,7 @@
 import { Layout, Menu, Button, Space, Typography, Dropdown, message } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -9,20 +9,10 @@ const { Text } = Typography;
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      setUser(JSON.parse(userStr));
-    }
-  }, [location.pathname]); // Update on route change (in case of login/logout redirect)
+  const { user, logout } = useAuth(); // Use Context
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    message.success('已退出登录');
+    logout();
     navigate('/login');
   };
 

@@ -1,93 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Table, Button, InputNumber, Popconfirm, message, Empty, Typography, Space, Statistic } from 'antd';
-import { DeleteOutlined, ShoppingOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Table, Button, InputNumber, Typography, Card, Space, message, Popconfirm, Empty, Spin } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const { Title, Text } = Typography;
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { cartItems, loading, updateQuantity, removeFromCart, clearCart } = useCart();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const navigate = useNavigate();
 
-  const fetchCart = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/cart');
-      setCartItems(res.data.items || []);
-    } catch (err) {
-      console.error(err);
-      // message.error('Failed to load cart'); // Interceptor or global handler might be better, or silence
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  const updateQuantity = async (productId, quantity) => {
-    try {
-      await api.put('/cart/update', { productId, quantity });
-      fetchCart();
-    } catch (err) {
-      message.error('Failed to update');
-    }
-  };
-
-  const removeItem = async (productId) => {
-    try {
-      await api.delete(`/cart/remove/${productId}`);
-      message.success('Item removed');
-      fetchCart();
-    } catch (err) {
-      message.error('Failed to remove');
-    }
-  };
-
-  const clearCart = async () => {
-    try {
-      await api.delete('/cart/clear');
-      setCartItems([]);
-      message.success('Cart cleared');
-    } catch (err) {
-      message.error('Failed to clear');
-    }
-  };
+  // Calculate total price
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    if (cartItems.length === 0) return;
     setCheckoutLoading(true);
     try {
-      await api.post('/orders/checkout'); // Assume backend handles items from cart DB
-      message.success('下单成功！');
-      fetchCart();
+      await api.post('/orders');
+      await clearCart(); 
+      message.success('下单成功');
       navigate('/orders');
     } catch (err) {
-      message.error(err.response?.data?.msg || 'Checkout failed');
+      message.error(err.response?.data?.msg || '下单失败');
     } finally {
       setCheckoutLoading(false);
     }
   };
 
+  if (loading && cartItems.length === 0) { // Only show spin if initial load and empty
+    return <div style={{ textAlign: 'center', padding: 50 }}><Spin size="large" /></div>;
+  }
+
+  if (cartItems.length === 0) {
+    return <div style={{ padding: 40, textAlign: 'center' }}><Empty description="购物车空空如也" /></div>;
+  }
+
   const columns = [
     {
-      title: '商品信息',
+      title: '商品',
       dataIndex: 'product',
       key: 'product',
       render: (product) => (
         <Space>
-           <img 
-             src={product?.image || 'https://via.placeholder.com/60'} 
-             alt={product?.name} 
-             style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }} 
-           />
-           <div style={{ maxWidth: 200 }}>
-             <Text strong>{product?.name}</Text>
-           </div>
+          <img src={product.image || 'https://via.placeholder.com/50'} alt={product.name} style={{ width: 50, height: 50, objectFit: 'cover' }} />
+          <Text>{product.name}</Text>
         </Space>
       ),
     },
@@ -95,62 +53,64 @@ const Cart = () => {
       title: '单价',
       dataIndex: 'product',
       key: 'price',
-      render: (product) => <Text>¥{product?.price?.toFixed(2)}</Text>,
+      render: (product) => `¥${product.price.toFixed(2)}`,
     },
     {
       title: '数量',
+      dataIndex: 'quantity',
       key: 'quantity',
-      render: (_, record) => (
+      render: (quantity, record) => (
         <InputNumber 
           min={1} 
-          max={record.product?.stock} // Limit by stock
-          value={record.quantity} 
-          onChange={(val) => updateQuantity(record.product._id, val)} 
+          max={99} 
+          value={quantity} 
+          onChange={(val) => updateQuantity(record.product._id, val)}
         />
       ),
     },
     {
       title: '小计',
       key: 'subtotal',
-      render: (_, record) => <Text strong style={{ color: '#ff4d4f' }}>¥{(record.product?.price * record.quantity).toFixed(2)}</Text>,
+      render: (_, record) => `¥${(record.product.price * record.quantity).toFixed(2)}`,
     },
     {
       title: '操作',
       key: 'action',
       render: (_, record) => (
-        <Popconfirm title="确定删除吗?" onConfirm={() => removeItem(record.product._id)}>
+        <Popconfirm title="确定删除吗?" onConfirm={() => removeFromCart(record.product._id)} cancelText="取消" okText="确定">
           <Button type="text" danger icon={<DeleteOutlined />}>删除</Button>
         </Popconfirm>
       ),
     },
   ];
 
-  const totalPrice = cartItems.reduce((acc, item) => acc + (item.product?.price * item.quantity), 0);
-
   return (
-    <div style={{ padding: '40px 20px', maxWidth: 1200, margin: '0 auto' }}>
-      <Title level={2} style={{ marginBottom: 30 }}><ShoppingOutlined /> 购物车</Title>
+    <div style={{ padding: '20px', maxWidth: 1200, margin: '0 auto' }}>
+      <Title level={2}>购物车</Title>
+      <Card>
+        <Table 
+          dataSource={cartItems} 
+          columns={columns} 
+          rowKey={(item) => item.product._id} 
+          pagination={false}
+        />
+        <div style={{ marginTop: 20, textAlign: 'right' }}>
+          <Space size="large">
+            <Text style={{ fontSize: 18 }}>
+              总计: <Text type="danger" strong style={{ fontSize: 24 }}>¥{totalPrice.toFixed(2)}</Text>
+            </Text>
+            <Button type="primary" size="large" onClick={handleCheckout} loading={checkoutLoading}>
+              去结算
+            </Button>
+          </Space>
+        </div>
+      </Card>
       
-      <Table 
-        loading={loading}
-        dataSource={cartItems} 
-        columns={columns} 
-        rowKey={(record) => record.product?._id || Math.random()} 
-        pagination={false}
-        locale={{ emptyText: <Empty description="购物车空空如也，快去选购吧" /> }}
-      />
-      
-      {cartItems.length > 0 && (
-        <Card style={{ marginTop: 24, textAlign: 'right' }}>
-           <Space size="large" align="center">
-             <Button onClick={clearCart}>清空购物车</Button>
-             <Statistic title="总计" value={totalPrice} precision={2} prefix="¥" valueStyle={{ color: '#ff4d4f' }} />
-             <Button type="primary" size="large" onClick={handleCheckout} loading={checkoutLoading} style={{ background: '#ff4d4f', borderColor: '#ff4d4f', minWidth: 120 }}>
-               立即结算
-             </Button>
-           </Space>
-        </Card>
-      )}
+      <div style={{ marginTop: 20, textAlign: 'right' }}>
+         <Popconfirm title="确定清空购物车吗?" onConfirm={clearCart} cancelText="取消" okText="确定">
+            <Button danger>清空购物车</Button>
+         </Popconfirm>
+      </div>
     </div>
   );
 };
