@@ -11,6 +11,7 @@
     "antd": "^6.1.0",
     "axios": "^1.13.2",
     "cookie": "^1.1.1",
+    "framer-motion": "^12.23.26",
     "koa-cors": "^0.0.16",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
@@ -46,6 +47,6 @@
     "autoprefixer": "^10.4.23",
     "postcss": "^8.5.6",
     "sass": "^1.96.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^3.4.19"
   }
 }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Row, Col, Typography, Button, Space, Card, Rate, Divider, Image, Spin, message, InputNumber, Badge } from 'antd';
-import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Button, Space, Card, Rate, Divider, Image, Spin, message, InputNumber } from 'antd';
+import { ShoppingCartOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import imgError from '../assets/imgs/imgError.png'
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const ProductDetail = () => {
   const { id } = useParams();

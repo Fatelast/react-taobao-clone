@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Carousel, Row, Col, Typography, Space, Button, message } from 'antd';
+import { Carousel, Row, Col, Typography, Space, Button } from 'antd';
 import {  FireOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';

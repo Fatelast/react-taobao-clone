@@ -1,20 +1,20 @@
-import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar, Input } from 'antd'; // Added Input, Badge, Avatar, removed Typography, message
-import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, SearchOutlined } from '@ant-design/icons'; // Added SearchOutlined, removed LogoutOutlined
+import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar, Input } from 'antd';
+import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext'; // Added useCart
-import '../scss/navbar.scss'
+import { useCart } from '../context/CartContext';
+import '../scss/navbar.scss';
 
 const { Header } = Layout;
-const { Search } = Input; // Destructure Search
+const { Search } = Input;
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { cartItems } = useCart(); // Use Cart Context
+  const { cartItems } = useCart();
 
-  // Basic total quantity calc (can be improved to use context value if context provides it)
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleLogout = () => {
@@ -42,61 +42,73 @@ const Navbar = () => {
   ];
 
   return (
-    <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '0 20px', boxShadow: '0 2px 8px #f0f1f2', position: 'sticky', top: 0, zIndex: 1000 }}>
+    <Header 
+      style={{ background: '#fff', padding: '0 20px', height: 64, lineHeight: '64px' }} 
+      className="flex items-center justify-between shadow-sm sticky top-0 z-[1000]"
+    >
       {/* Logo */}
-      <div className="logo" style={{ fontSize: '24px', fontWeight: 'bold', marginRight: '20px' }}>
-        <Link to="/" style={{ color: '#ff4d4f' }}>Taobao Clone</Link>
+      <div className="text-2xl font-bold mr-5 shrink-0 flex items-center">
+        <Link to="/" className="text-red-500 hover:text-red-600 flex items-center h-full">Taobao Clone</Link>
       </div>
 
       {/* Search Bar - Center */}
-      <div style={{ flex: 1, maxWidth: 600, margin: '0 20px' }}>
+      <div className="flex-1 max-w-[600px] mx-5 flex items-center">
          <Search 
             placeholder="搜索商品..." 
             onSearch={onSearch} 
-            className='seach-input'
+            className='search-input'
             enterButton 
             size="large" 
+            style={{ borderRadius: '20px' }}
          />
       </div>
 
       {/* Right Menu */}
-      <Space size="middle" style={{ marginLeft: '20px' }}>
+      <div className="flex items-center gap-4">
         <Menu
           theme="light"
           mode="horizontal"
           selectedKeys={[location.pathname]}
-          style={{ borderBottom: 'none', flex: 'none', width: 'auto', background: 'transparent' }}
+          className="border-b-0 min-w-[200px]"
+          style={{ background: 'transparent', lineHeight: '62px' }}
           items={[
             { key: '/', icon: <HomeOutlined />, label: <Link to="/">首页</Link> },
             { key: '/products', icon: <AppstoreOutlined />, label: <Link to="/products">全部商品</Link> },
           ]}
         />
 
-        <Link to="/cart">
-          <Button type="text" icon={
-            <Badge count={cartCount} size="small" offset={[2, 0]}>
-              <ShoppingCartOutlined style={{ fontSize: '20px', color: '#333' }} />
-            </Badge>
-          } style={{ padding: '0 8px' }} />
+        <Link to="/cart" className="flex items-center">
+          <motion.div
+             key={cartCount}
+             initial={{ scale: 1 }}
+             animate={{ scale: [1, 1.2, 1] }}
+             transition={{ duration: 0.3 }}
+          >
+            <Button type="text" icon={
+                <Badge count={cartCount} size="small" offset={[2, 0]}>
+                <ShoppingCartOutlined className="text-xl text-gray-800" />
+                </Badge>
+            } className="px-2 flex items-center justify-center" />
+          </motion.div>
         </Link>
         
         {user ? (
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-            <Space style={{ cursor: 'pointer', marginLeft: 10 }}>
-               <Avatar style={{ backgroundColor: '#ff4d4f' }} icon={<UserOutlined />} />
-            </Space>
+            <div className="cursor-pointer ml-2 flex items-center">
+               <Avatar className="bg-red-500" icon={<UserOutlined />} />
+            </div>
           </Dropdown>
         ) : (
-          <Space style={{ marginLeft: 10 }}>
+          <Space className="ml-2">
              <Link to="/login">
                <Button type="text">登录</Button>
              </Link>
              <Link to="/register">
-               <Button type="primary" style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}>注册</Button>
+               <Button type="primary" className="bg-red-500 border-red-500 hover:bg-red-600 hover:border-red-600">注册</Button>
              </Link>
           </Space>
         )}
-      </Space>
+      </div>
     </Header>
   );
 };
