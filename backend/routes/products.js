@@ -3,14 +3,21 @@ const Product = require('../models/Product');
 
 const router = new Router();
 
-// 获取所有产品（支持分页）
+// 获取所有产品（支持分页和搜索）
 router.get('/', async (ctx) => {
   const page = parseInt(ctx.query.page) || 1;
   const limit = parseInt(ctx.query.limit) || 12;
+  const keyword = ctx.query.keyword || ''; // Get keyword from query
   const skip = (page - 1) * limit;
 
-  const total = await Product.countDocuments();
-  const products = await Product.find().skip(skip).limit(limit);
+  // Build query object
+  const query = {};
+  if (keyword) {
+    query.name = { $regex: keyword, $options: 'i' }; // Case-insensitive regex search on name
+  }
+
+  const total = await Product.countDocuments(query);
+  const products = await Product.find(query).skip(skip).limit(limit);
 
   ctx.body = {
     products,

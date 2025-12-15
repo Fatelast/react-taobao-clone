@@ -32,64 +32,47 @@ const ProductCard = ({ product }) => {
   return (
     <Card
       hoverable
-      style={{ width: '100%', borderRadius: 12, overflow: 'hidden' }}
+      className="w-full rounded-xl overflow-hidden"
       bodyStyle={{ padding: 12 }}
       cover={
         <div 
-          style={{ position: 'relative', width: '100%', aspectRatio: '1/1', overflow: 'hidden', background: '#f5f5f5', cursor: 'pointer' }}
+          className="relative w-full aspect-square overflow-hidden bg-gray-100 cursor-pointer group"
           onClick={() => navigate(`/product/${product._id}`)}
         >
             <Image
               alt={product.name}
               src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'}
               fallback={imgError}
-              preview={false} // Disable preview on click, navigate to detail instead
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'cover',
-                transition: 'transform 0.3s',
-                mixBlendMode: 'multiply'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              preview={false}
+              className="w-full h-full object-cover transition-transform duration-300 mix-blend-multiply group-hover:scale-105"
             />
         </div>
       }
     >
-      <div onClick={() => navigate(`/product/${product._id}`)} style={{ cursor: 'pointer' }}>
-        <div style={{ height: 44, overflow: 'hidden', marginBottom: 8 }}>
+      <div onClick={() => navigate(`/product/${product._id}`)} className="cursor-pointer">
+        <div className="h-11 overflow-hidden mb-2">
           <Text 
             strong 
-            style={{ 
-              fontSize: 14, 
-              lineHeight: '22px',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-            }}
+            className="text-sm leading-[22px] line-clamp-2 block"
+            title={product.name}
           >
             {product.name}
           </Text>
         </div>
       
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div className="flex items-end justify-between">
           <div>
-            <Text type="danger" strong style={{ fontSize: 18 }}>
-              <span style={{ fontSize: 12 }}>¥</span>{product.price?.toFixed(2)}
+            <Text className="text-lg text-red-500 font-bold block">
+              <span className="text-xs">¥</span>{product.price?.toFixed(2)}
             </Text>
-            <br />
-            <Text delete type="secondary" style={{ fontSize: 12 }}>
+            <Text delete type="secondary" className="text-xs">
               ¥{(product.price * 1.5).toFixed(2)}
             </Text>
           </div>
-          {/* Button moved out of Link/div so stopPropagation works */}
         </div>
       </div>
       
-      {/* Position Button Absolutely or handle layout carefully since we removed Link wrapper around card content */}
-      {/* Re-structuring to keep button distinct */}
-      <div style={{ position: 'absolute', right: 12, bottom: 12 }}>
+      <div className="absolute right-3 bottom-3">
           <Badge count={quantity} offset={[-5, 5]} showZero={false}>
             <Button
               type="primary"

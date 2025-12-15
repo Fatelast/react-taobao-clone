@@ -59,16 +59,16 @@ const ProductDetail = () => {
   if (!product) return <div style={{ textAlign: 'center', padding: 100 }}>商品不存在</div>;
 
   return (
-    <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
+    <div className="max-w-[1200px] mx-auto my-10 px-5">
       <Card bordered={false} bodyStyle={{ padding: 0 }}>
         <Row gutter={[40, 40]}>
           {/* 左侧图片 */}
           <Col xs={24} md={10}>
-             <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, overflow: 'hidden' }}>
+             <div className="border border-gray-100 rounded-lg overflow-hidden">
                 <Image
                   src={product.image || 'https://via.placeholder.com/500x500'}
                   fallback={imgError}
-                  style={{ width: '100%', display: 'block' }}
+                  className="w-full block"
                 />
              </div>
           </Col>
@@ -82,13 +82,13 @@ const ProductDetail = () => {
                <Text type="secondary">200+ 销量</Text>
             </Space>
             
-            <div style={{ background: '#fafafa', padding: '20px', marginTop: 24, borderRadius: 8 }}>
+            <div className="bg-gray-50 p-5 mt-6 rounded-lg">
                <Text type="secondary">价格</Text>
-               <div style={{ marginTop: 4 }}>
-                  <Text type="danger" style={{ fontSize: 32, fontWeight: 'bold' }}>
-                    <span style={{ fontSize: 18 }}>¥</span>{product.price.toFixed(2)}
+               <div className="mt-1">
+                  <Text className="text-red-500 text-3xl font-bold">
+                    <span className="text-lg">¥</span>{product.price.toFixed(2)}
                   </Text>
-                  <Text delete type="secondary" style={{ marginLeft: 12 }}>
+                  <Text delete type="secondary" className="ml-3">
                     ¥{(product.price * 1.5).toFixed(2)}
                   </Text>
                </div>
@@ -97,10 +97,10 @@ const ProductDetail = () => {
             <Divider />
 
             {/* 规格/数量选择 */}
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
                <Space direction="vertical" size="large">
                  <Space>
-                   <Text type="secondary" style={{ width: 60 }}>数量</Text>
+                   <Text type="secondary" className="w-[60px]">数量</Text>
                    <InputNumber min={1} max={99} value={qty} onChange={setQty} />
                    <Text type="secondary">库存 {product.stock} 件</Text>
                  </Space>
@@ -108,17 +108,11 @@ const ProductDetail = () => {
             </div>
 
             {/* 操作按钮 */}
-            <Space size="middle" style={{ marginTop: 12 }}>
+            <Space size="middle" className="mt-3">
               <Button 
                 type="primary" 
                 size="large" 
-                style={{ 
-                  background: '#ffeded', 
-                  borderColor: '#ffeded', 
-                  color: '#ff4d4f', 
-                  minWidth: 140,
-                  height: 50
-                }}
+                className="bg-[#ffeded] border-[#ffeded] text-[#ff4d4f] min-w-[140px] h-[50px] hover:bg-red-100 hover:border-red-100 hover:text-red-500"
                 onClick={handleBuyNow}
               >
                 立即购买
@@ -127,12 +121,7 @@ const ProductDetail = () => {
                  type="primary" 
                  size="large" 
                  icon={<ShoppingCartOutlined />}
-                 style={{ 
-                   background: '#ff4d4f', 
-                   borderColor: '#ff4d4f', 
-                   minWidth: 140,
-                   height: 50
-                 }}
+                 className="bg-red-500 border-red-500 min-w-[140px] h-[50px] hover:bg-red-600 hover:border-red-600"
                  onClick={handleAddToCart}
               >
                 加入购物车
@@ -140,8 +129,8 @@ const ProductDetail = () => {
             </Space>
             
             {/* 服务保障 */}
-             <div style={{ marginTop: 40 }}>
-               <Space size="large" style={{ color: '#888' }}>
+             <div className="mt-10">
+               <Space size="large" className="text-gray-500">
                  <Space><SafetyCertificateOutlined /> 正品保障</Space>
                  <Space><SafetyCertificateOutlined /> 七天无理由退换</Space>
                  <Space><SafetyCertificateOutlined /> 极速发货</Space>
@@ -152,12 +141,12 @@ const ProductDetail = () => {
       </Card>
 
       {/* 详细描述 */}
-      <Card style={{ marginTop: 40 }} title="商品详情">
+      <Card className="mt-10" title="商品详情">
          <div dangerouslySetInnerHTML={{ __html: product.description || '<p>暂无详细描述</p>' }} />
          {/* Simulate rich text content */}
-         <div style={{ marginTop: 20, color: '#666', lineHeight: 1.8 }}>
+         <div className="mt-5 text-gray-500 leading-loose">
             <p>这里是示例商品的详细介绍。通常包含更多图片、参数表、使用说明等。</p>
-            <Image src="https://via.placeholder.com/800x400?text=Detail+Banner" style={{ maxWidth: '100%' }} />
+            <Image src="https://via.placeholder.com/800x400?text=Detail+Banner" className="max-w-full" />
          </div>
       </Card>
     </div>

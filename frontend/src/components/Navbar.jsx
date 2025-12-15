@@ -1,73 +1,93 @@
-import { Layout, Menu, Button, Space, Typography, Dropdown, message } from 'antd';
-import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar, Input } from 'antd'; // Added Input, Badge, Avatar, removed Typography, message
+import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, SearchOutlined } from '@ant-design/icons'; // Added SearchOutlined, removed LogoutOutlined
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext'; // Added useCart
+import '../scss/navbar.scss'
 
 const { Header } = Layout;
-const { Text } = Typography;
+const { Search } = Input; // Destructure Search
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth(); // Use Context
+  const { user, logout } = useAuth();
+  const { cartItems } = useCart(); // Use Cart Context
+
+  // Basic total quantity calc (can be improved to use context value if context provides it)
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const menuItems = [
-    {
-      key: 'logout',
-      label: '退出登录',
-      icon: <LogoutOutlined />,
-      onClick: handleLogout
+  const onSearch = (value) => {
+    if (value.trim()) {
+      navigate(`/products?keyword=${encodeURIComponent(value.trim())}`);
+    } else {
+      navigate('/products');
     }
+  };
+
+  const userMenu = [
+    {
+      key: '1',
+      label: <Link to="/orders">我的订单</Link>,
+    },
+    {
+      key: '2',
+      label: <span onClick={handleLogout}>退出登录</span>,
+    },
   ];
 
   return (
-    <Header style={{ 
-      position: 'sticky', 
-      top: 0, 
-      zIndex: 1000, 
-      width: '100%', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'space-between',
-      backgroundColor: '#fff',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-    }}>
-      <div className="logo" style={{ marginRight: 20 }}>
-        <Link to="/" style={{ fontSize: 24, fontWeight: 'bold', color: '#ff4d4f' }}>
-             TaoBao
-        </Link>
+    <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '0 20px', boxShadow: '0 2px 8px #f0f1f2', position: 'sticky', top: 0, zIndex: 1000 }}>
+      {/* Logo */}
+      <div className="logo" style={{ fontSize: '24px', fontWeight: 'bold', marginRight: '20px' }}>
+        <Link to="/" style={{ color: '#ff4d4f' }}>Taobao Clone</Link>
       </div>
 
-      <Menu
-        theme="light"
-        mode="horizontal"
-        selectedKeys={[location.pathname]}
-        style={{ flex: 1, borderBottom: 'none' }}
-        items={[
-          { key: '/', icon: <HomeOutlined />, label: <Link to="/">首页</Link> },
-          { key: '/products', icon: <AppstoreOutlined />, label: <Link to="/products">全部商品</Link> },
-          { key: '/cart', icon: <ShoppingCartOutlined />, label: <Link to="/cart">购物车</Link> },
-           { key: '/orders', icon: <div style={{ fontSize: 16 }}>📦</div>, label: <Link to="/orders">我的订单</Link> }
-        ]}
-      />
+      {/* Search Bar - Center */}
+      <div style={{ flex: 1, maxWidth: 600, margin: '0 20px' }}>
+         <Search 
+            placeholder="搜索商品..." 
+            onSearch={onSearch} 
+            className='seach-input'
+            enterButton 
+            size="large" 
+         />
+      </div>
 
-      <div style={{ marginLeft: 20 }}>
+      {/* Right Menu */}
+      <Space size="middle" style={{ marginLeft: '20px' }}>
+        <Menu
+          theme="light"
+          mode="horizontal"
+          selectedKeys={[location.pathname]}
+          style={{ borderBottom: 'none', flex: 'none', width: 'auto', background: 'transparent' }}
+          items={[
+            { key: '/', icon: <HomeOutlined />, label: <Link to="/">首页</Link> },
+            { key: '/products', icon: <AppstoreOutlined />, label: <Link to="/products">全部商品</Link> },
+          ]}
+        />
+
+        <Link to="/cart">
+          <Button type="text" icon={
+            <Badge count={cartCount} size="small" offset={[2, 0]}>
+              <ShoppingCartOutlined style={{ fontSize: '20px', color: '#333' }} />
+            </Badge>
+          } style={{ padding: '0 8px' }} />
+        </Link>
+        
         {user ? (
-          <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-            <Space style={{ cursor: 'pointer' }}>
-               <div style={{ width: 32, height: 32, backgroundColor: '#ff4d4f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                 <UserOutlined />
-               </div>
-              <Text strong>{user.username}</Text>
+          <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+            <Space style={{ cursor: 'pointer', marginLeft: 10 }}>
+               <Avatar style={{ backgroundColor: '#ff4d4f' }} icon={<UserOutlined />} />
             </Space>
           </Dropdown>
         ) : (
-          <Space>
+          <Space style={{ marginLeft: 10 }}>
              <Link to="/login">
                <Button type="text">登录</Button>
              </Link>
@@ -76,7 +96,7 @@ const Navbar = () => {
              </Link>
           </Space>
         )}
-      </div>
+      </Space>
     </Header>
   );
 };
