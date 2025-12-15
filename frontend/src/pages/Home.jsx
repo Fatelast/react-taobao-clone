@@ -39,7 +39,7 @@ const Home = () => {
     const fetchHot = async () => {
       try {
         const res = await api.get('/products');
-        setHotProducts(res.data.slice(0, 8)); // 取前8个做热门展示
+        setHotProducts(res.data.products?.slice(0, 8)); // 取前8个做热门展示
       } catch (err) {
         console.error(err);
       } finally {
