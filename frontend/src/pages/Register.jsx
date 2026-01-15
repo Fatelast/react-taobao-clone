@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, Button, message, Typography, Row, Col } from 'antd';
+import { Form, Input, Button, message, Typography, Row, Col, ConfigProvider, theme } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TaobaoCircleOutlined, ArrowRightOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
@@ -16,20 +16,39 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
+      // 注册请求
       const res = await api.post('/register', values);
-      login(res.data.token, res.data.user);
-      message.success('身份验证已建立，正在进入控制台');
-      setTimeout(() => navigate('/'), 100);
+      
+      // 注册成功后立即视为同步登录
+      const { token, user: userData } = res.data;
+      login(token, userData);
+      
+      message.success('身份生成成功！正在同步权限...', 1);
+      
+      // 稍作延迟以获得更顺滑的视觉反馈
+      setTimeout(() => {
+        navigate('/');
+      }, 800);
+      
     } catch (err) {
-      console.error(err);
-      message.error(err.response?.data?.msg || '注册遭遇阻碍，请检查输入');
+      console.error('Registration Security Exception:', err);
+      message.error(err.extractedMsg || '安全协议建立失败，请稍后重试');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: '#ff6a00',
+          borderRadius: 16,
+        },
+      }}
+    >
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
       {/* 动态漫射背景层 */}
       <div className="absolute inset-0 z-0">
         <motion.div 
@@ -176,6 +195,7 @@ const Register = () => {
         </div>
       </motion.div>
     </div>
+    </ConfigProvider>
   );
 };
 

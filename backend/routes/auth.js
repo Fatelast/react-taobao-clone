@@ -12,7 +12,8 @@ router.get('/me', auth, async (ctx) => {
         if (!user) return ctx.throw(404, 'User not found');
         ctx.body = user;
     } catch (err) {
-        ctx.throw(500, err.message);
+        ctx.status = err.status || 500;
+        ctx.body = { msg: err.message || '内部安全错误' };
     }
 });
 
@@ -21,7 +22,7 @@ router.post('/register', async (ctx) => {
     const { username, email, password } = ctx.request.body;
     try {
         let user = await User.findOne({ email });
-        if (user) return ctx.body = { msg: 'User exists' };
+        if (user) ctx.throw(400, '该邮箱已被注册，请直接登录');
 
         user = new User({ username, email, password });
         await user.save();
@@ -32,7 +33,8 @@ router.post('/register', async (ctx) => {
             user: { id: user._id, username: user.username, email: user.email } 
         };
     } catch (err) {
-        ctx.throw(500, err.message);
+        ctx.status = err.status || 500;
+        ctx.body = { msg: err.message || '内部安全错误' };
     }
 });
 
@@ -52,7 +54,8 @@ router.post('/login', async (ctx) => {
             user: { id: user._id, username: user.username, email: user.email } 
         };
     } catch (err) {
-        ctx.throw(500, err.message);
+        ctx.status = err.status || 500;
+        ctx.body = { msg: err.message || '内部安全错误' };
     }
 });
 

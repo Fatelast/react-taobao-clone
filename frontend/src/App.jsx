@@ -4,6 +4,7 @@ import { Layout, Spin } from 'antd';
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from './components/PageTransition';
 import Navbar from './components/Navbar';
+import CustomCursor from './components/CustomCursor';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -65,6 +66,7 @@ const App = () => {
   return (
     <AuthProvider>
       <CartProvider>
+        <CustomCursor />
         <Router>
           <Layout className="min-h-screen">
             <Navbar />

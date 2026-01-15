@@ -26,11 +26,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // You could handle 401 (Unauthorized) here by redirecting to login, etc.
+    const errorMsg = error.response?.data?.msg || error.response?.data || error.message || 'Unknown Security error';
+    // 注入提取后的消息，方便 UI 直接使用
+    error.extractedMsg = errorMsg;
+    
     if (error.response && error.response.status === 401) {
-       // Optional: clear token if invalid
-       // localStorage.removeItem('token');
-       // window.location.href = '/login'; 
+       // Optional: Auth redirection logic
     }
     return Promise.reject(error);
   }

@@ -90,6 +90,39 @@ body {
     left: 100%;
     top: 100%;
   }
+
+  /* 认证门户专项强力覆盖 (PRO MAX) */
+  .premium-form .ant-input,
+  .premium-form .ant-input-affix-wrapper,
+  .premium-form .ant-input-password,
+  .premium-form .ant-input-status-error,
+  .premium-form .ant-input-affix-wrapper-status-error {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .premium-form .ant-input-affix-wrapper > input.ant-input {
+    background: transparent !important;
+    color: white !important;
+  }
+
+  .premium-form .ant-input::placeholder,
+  .premium-form .ant-input-affix-wrapper .ant-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* 处理浏览器自动填充导致的白底问题 */
+  .premium-form input:-webkit-autofill,
+  .premium-form input:-webkit-autofill:hover, 
+  .premium-form input:-webkit-autofill:focus,
+  .premium-form .ant-input-affix-wrapper input:-webkit-autofill {
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0px 1000px #080808 inset !important;
+    box-shadow: 0 0 0px 1000px #080808 inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @keyframes float {
@@ -100,6 +133,59 @@ body {
 @keyframes shine {
   0% { left: -100%; }
   100% { left: 100%; }
+}
+
+/* 交互美学极致增强 (PRO MAX) */
+
+/* 1. 全局自定义光标 - 强制隐藏所有原生指针 (包含输入框状态) */
+html, body, *, 
+input, textarea, [contenteditable="true"],
+a, button, [role="button"], .ant-btn, .ant-menu-item, .ant-dropdown-trigger {
+  cursor: none !important;
+}
+
+/* 2. Caret (打字光标) 极致美化 */
+input, textarea, [contenteditable="true"] {
+  caret-color: var(--primary) !important;
+  text-shadow: 0 0 2px rgba(255, 106, 0, 0.2);
+}
+
+/* 3. 输入框聚焦“呼吸律动”特效与 Caret 同步 */
+.ant-input:focus, 
+.ant-input-focused,
+.ant-input-affix-wrapper-focused {
+  animation: caret-shimmer 2s infinite !important;
+}
+
+/* 2. 输入框聚焦“呼吸律动”特效 */
+.ant-input:focus, 
+.ant-input-focused,
+.ant-input-affix-wrapper-focused,
+.premium-form .ant-input:focus,
+.premium-form .ant-input-affix-wrapper-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.1), 
+              0 0 15px rgba(255, 106, 0, 0.3) !important;
+  animation: breathe-glow 2s ease-in-out infinite !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes breathe-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(255, 106, 0, 0.2), 
+                0 0 10px rgba(255, 106, 0, 0.1); 
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(255, 106, 0, 0.5), 
+                0 0 30px rgba(255, 106, 0, 0.2); 
+    border-color: #ff9a9e !important;
+  }
+}
+
+/* 3. 全局可点击元素压感反馈 */
+button:active, .ant-btn:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.1s ease !important;
 }
 
 code {

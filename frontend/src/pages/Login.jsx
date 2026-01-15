@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, Button, message, Typography, Checkbox } from 'antd';
+import { Form, Input, Button, message, Typography, Checkbox, ConfigProvider, theme } from 'antd';
 import { UserOutlined, LockOutlined, TaobaoCircleOutlined, ArrowRightOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
@@ -18,18 +18,30 @@ const Login = () => {
     try {
       const res = await api.post('/login', values);
       login(res.data.token, res.data.user)
-      message.success('欢迎回来，尊贵的会员');
-      navigate('/');
+      message.success('身份验证通过，欢迎回来', 1);
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
     } catch (err) {
-      console.error(err);
-      message.error(err.response?.data?.msg || '验证未通过，请核对信息');
+      console.error('Login Security Exception:', err);
+      message.error(err.extractedMsg || '凭证验证未通过，请核对信息');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: '#ff6a00',
+          borderRadius: 16,
+        },
+      }}
+    >
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
       {/* 动态漫射背景层 */}
       <div className="absolute inset-0 z-0">
         <motion.div 
@@ -146,6 +158,7 @@ const Login = () => {
         </div>
       </motion.div>
     </div>
+    </ConfigProvider>
   );
 };
 
