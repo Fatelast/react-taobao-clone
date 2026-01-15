@@ -29,38 +29,47 @@ const ProductList = () => {
     if (node) observer.current.observe(node);
   }, [loading, hasMore]);
 
+  const isFetchingRef = useRef(false);
+
+  // 统一加载逻辑，避免竞态与重复清理
+  const fetchProducts = useCallback(async (isNewSearch = false) => {
+    if (isFetchingRef.current && !isNewSearch) return;
+    
+    isFetchingRef.current = true;
+    setLoading(true);
+    try {
+      const currentPage = isNewSearch ? 1 : page;
+      const res = await api.get(`/products?page=${currentPage}&limit=12&keyword=${encodeURIComponent(keyword)}`);
+      const newProducts = res.data.products || [];
+      
+      setProducts(prev => {
+        if (isNewSearch) return newProducts;
+        const existingIds = new Set(prev.map(p => p._id));
+        const uniqueNew = newProducts.filter(p => !existingIds.has(p._id));
+        return [...prev, ...uniqueNew];
+      });
+
+      setHasMore(!(res.data.page >= res.data.pages || newProducts.length < 12));
+    } catch (err) {
+      console.error('Fetch Error:', err);
+      message.error('加载商品失败');
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, [page, keyword]); // 彻底移除 loading 依赖，防止死锁循环
+
+  // 处理搜索关键字变化：立即重置
   useEffect(() => {
     setProducts([]);
     setPage(1);
     setHasMore(true);
   }, [keyword]);
 
+  // 处理分页加载
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/products?page=${page}&limit=12&keyword=${encodeURIComponent(keyword)}`);
-        
-        setProducts(prev => {
-          const newProducts = res.data.products;
-          if (page === 1) return newProducts;
-          const existingIds = new Set(prev.map(p => p._id));
-          const uniqueNew = newProducts.filter(p => !existingIds.has(p._id));
-          return [...prev, ...uniqueNew];
-        });
-
-        if (res.data.page >= res.data.pages || res.data.products.length < 12) {
-            setHasMore(false);
-        }
-      } catch (err) {
-        console.error(err);
-        message.error('加载商品失败');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [page, keyword]);
+    fetchProducts(page === 1);
+  }, [page, keyword, fetchProducts]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -119,51 +128,69 @@ const ProductList = () => {
       </div>
 
       {/* 2. Product Grid */}
-      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
-        <AnimatePresence mode="popLayout">
-          {products.length === 0 && !loading ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-40"
-            >
-              <Empty 
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={
-                  <div className="text-center">
-                    <Text className="text-xl text-gray-400 block mb-4">没有捕捉到相关商品...</Text>
-                    <Text type="secondary">换个关键词试试，或者浏览我们的推荐集合</Text>
-                  </div>
-                } 
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <Row gutter={[24, 40]}>
-                {products.map((product, index) => (
-                  <Col 
-                    key={product._id}
-                    ref={products.length === index + 1 ? lastElementRef : null}
-                    xs={24} sm={12} md={8} lg={6} xl={6}
-                    className="flex justify-center"
-                  >
-                    <motion.div 
-                      variants={itemVariants}
-                      layout
-                      className="w-full"
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10 min-h-[400px]">
+        <div className="min-h-[600px] flex flex-col items-center">
+          <AnimatePresence mode="wait">
+            {(loading && products.length === 0) ? (
+              <motion.div 
+                key="initial-loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="py-60 flex flex-col items-center gap-6"
+              >
+                 <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                 <Text type="secondary" className="font-bold text-orange-500 animate-pulse uppercase tracking-[0.2em] text-xs">正在捕捉全球珍宝...</Text>
+              </motion.div>
+            ) : (!loading && products.length === 0) ? (
+              <motion.div 
+                key="empty-state"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="py-40 w-full"
+              >
+                <Empty 
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <div className="text-center">
+                      <Text className="text-xl text-gray-400 block mb-4">没有捕捉到相关商品...</Text>
+                      <Text type="secondary">换个关键词试试，或者浏览我们的推荐集合</Text>
+                    </div>
+                  } 
+                />
+              </motion.div>
+            ) : products.length > 0 ? (
+              <motion.div
+                key="product-grid"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0 }}
+                className="w-full"
+              >
+                <Row gutter={[24, 40]}>
+                  {products.map((product, index) => (
+                    <Col 
+                      key={product._id}
+                      ref={products.length === index + 1 ? lastElementRef : null}
+                      xs={24} sm={12} md={8} lg={6} xl={6}
+                      className="flex justify-center"
                     >
-                      <ProductCard product={product} />
-                    </motion.div>
-                  </Col>
-                ))}
-              </Row>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                      <motion.div 
+                        variants={itemVariants}
+                        layout
+                        className="w-full"
+                      >
+                        <ProductCard product={product} />
+                      </motion.div>
+                    </Col>
+                  ))}
+                </Row>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </div>
         
         {/* Loading / End Indicators */}
         <div className="text-center mt-20 h-20">

@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import imgError from '../assets/imgs/imgError.png';
-
 const { Text } = Typography;
+
+// 极致轻量化占位图 (PRO MAX)
+const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f9fafb'/%3E%3Ctext y='50%25' x='50%25' font-size='20' text-anchor='middle' dominant-baseline='central' fill='%239ca3af' font-family='sans-serif'%3E暂无图片%3C/text%3E%3C/svg%3E";
 
 const ProductCard = ({ product }) => {
   const { user } = useAuth();
@@ -14,8 +15,12 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   // Removed local imgError state as Antd Image handles fallback
   
-  // Calculate quantity of this product in cart
-  const cartItem = cartItems.find(item => item.product._id === product._id || item.product === product._id);
+  // Calculate quantity of this product in cart - 增加安全检查 (PRO MAX)
+  const cartItem = Array.isArray(cartItems) ? cartItems.find(item => {
+    if (!item || !item.product) return false;
+    const prodId = typeof item.product === 'object' ? item.product._id : item.product;
+    return prodId === product._id;
+  }) : null;
   const quantity = cartItem ? cartItem.quantity : 0;
 
   const handleAddToCart = async (e) => {
@@ -41,15 +46,20 @@ const ProductCard = ({ product }) => {
         bodyStyle={{ padding: 12 }}
         cover={
           <div 
-            className="relative w-full aspect-square overflow-hidden bg-gray-100 cursor-pointer group"
+            className="relative w-full aspect-square overflow-hidden bg-gray-50 cursor-pointer group flex items-center justify-center p-2"
             onClick={() => navigate(`/product/${product._id}`)}
           >
               <Image
                 alt={product.name}
-                src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'}
-                fallback={imgError}
+                src={product.image || PLACEHOLDER_SVG}
+                fallback={PLACEHOLDER_SVG}
                 preview={false}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 mix-blend-multiply"
+                placeholder={
+                   <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                      <div className="w-8 h-8 border-2 border-orange-500/20 border-t-orange-500 rounded-full animate-spin" />
+                   </div>
+                }
+                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
           </div>
         }
@@ -67,11 +77,11 @@ const ProductCard = ({ product }) => {
         
           <div className="flex items-end justify-between">
             <div>
-              <Text className="text-lg text-red-500 font-bold block">
-                <span className="text-xs">¥</span>{product.price?.toFixed(2)}
+              <Text className="text-xl text-orange-600 font-bold block">
+                <span className="text-sm mr-0.5">¥</span>{(product.price || 0).toFixed(2)}
               </Text>
-              <Text delete type="secondary" className="text-xs text-gray-400">
-                ¥{(product.price * 1.5).toFixed(2)}
+              <Text delete type="secondary" className="text-[10px] text-gray-400">
+                ¥{((product.price || 0) * 1.5).toFixed(2)}
               </Text>
             </div>
           </div>

@@ -6,7 +6,9 @@ import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import imgError from '../assets/imgs/imgError.png'
+
+// 极致轻量化占位图 (PRO MAX)
+const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f9fafb'/%3E%3Ctext y='50%25' x='50%25' font-size='20' text-anchor='middle' dominant-baseline='central' fill='%239ca3af' font-family='sans-serif'%3E暂无图片%3C/text%3E%3C/svg%3E";
 
 const { Title, Text } = Typography;
 
@@ -100,8 +102,8 @@ const ProductDetail = () => {
              >
                 <div className="glass-card rounded-[3rem] overflow-hidden p-4 shadow-2xl bg-white/40">
                   <Image
-                    src={product.image || 'https://via.placeholder.com/800x800'}
-                    fallback={imgError}
+                    src={product.image || PLACEHOLDER_SVG}
+                    fallback={PLACEHOLDER_SVG}
                     className="w-full h-auto rounded-[2.5rem] object-cover"
                     preview={{
                       mask: <div className="text-white font-bold tracking-widest bg-black/20 backdrop-blur-sm w-full h-full flex items-center justify-center">点击预览高清大图</div>
@@ -231,8 +233,8 @@ const ProductDetail = () => {
                 
                 {/* 模拟丰富细节展示 */}
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-                   <motion.div whileHover={{ scale: 1.02 }} className="rounded-[3rem] overflow-hidden shadow-2xl">
-                      <Image src="https://via.placeholder.com/800x600?text=Premium+Design" className="w-full" />
+                   <motion.div whileHover={{ scale: 1.02 }} className="rounded-[3rem] overflow-hidden shadow-2xl bg-gray-50">
+                      <Image src={product.image || PLACEHOLDER_SVG} fallback={PLACEHOLDER_SVG} className="w-full" />
                    </motion.div>
                    <div className="flex flex-col justify-center p-8">
                       <Title level={3} className="!font-black !mb-6 text-gradient">极致设计美学</Title>

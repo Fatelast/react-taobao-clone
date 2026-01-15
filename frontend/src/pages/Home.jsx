@@ -240,10 +240,11 @@ const Home = () => {
                 ))}
               </Row>
               
-              {hotProducts.length === 0 && (
-                <div className="text-center py-40">
-                  <div className="text-6xl mb-6">📦</div>
-                  <Text type="secondary" className="text-2xl font-medium block">暂无商品，正在为您筹备新货...</Text>
+              {hotProducts.length === 0 && !loading && (
+                <div className="text-center py-40 bg-gray-50/50 rounded-[3rem] border-2 border-dashed border-gray-100">
+                  <div className="text-6xl mb-6 grayscale opacity-30">📦</div>
+                  <Text type="secondary" className="text-2xl font-black block text-gray-400">商城正在上新中...</Text>
+                  <Text type="secondary" className="text-sm mt-2 block">优质好物即将抵达，敬请期待</Text>
                 </div>
               )}
 
