@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Row, Col, message, Typography, Spin, Empty } from 'antd';
+import { Row, Col, message, Typography, Spin, Empty, Tag } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingOutlined, SearchOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import { useSearchParams } from 'react-router-dom';
@@ -16,7 +18,6 @@ const ProductList = () => {
   
   const observer = useRef();
   
-  // Last element ref for infinite scroll
   const lastElementRef = useCallback(node => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
@@ -28,14 +29,12 @@ const ProductList = () => {
     if (node) observer.current.observe(node);
   }, [loading, hasMore]);
 
-  // Reset list when keyword changes
   useEffect(() => {
     setProducts([]);
     setPage(1);
     setHasMore(true);
   }, [keyword]);
 
-  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -43,31 +42,16 @@ const ProductList = () => {
         const res = await api.get(`/products?page=${page}&limit=12&keyword=${encodeURIComponent(keyword)}`);
         
         setProducts(prev => {
-          // If page 1, replace. If > 1, append. 
-          // Note: StrictMode double invoke might cause issues, simplified here.
-          // Correct logic: if page 1, return new data. Else append unique.
-          
           const newProducts = res.data.products;
           if (page === 1) return newProducts;
-          
-          // Filter duplicates just in case
           const existingIds = new Set(prev.map(p => p._id));
           const uniqueNew = newProducts.filter(p => !existingIds.has(p._id));
           return [...prev, ...uniqueNew];
         });
 
-        if (res.data.products.length === 0 || products.length + res.data.products.length >= res.data.total) {
-             // Precise termination might be tricky with async state updates, 
-             // but checking returned length < limit is easiest heuristic
-             if (res.data.products.length < 12) setHasMore(false);
-        }
-        
-        // Also strictly check total if available, but 'products' above is prev state...
-        // Let's rely on returned count. 
-        if (res.data.page >= res.data.pages) {
+        if (res.data.page >= res.data.pages || res.data.products.length < 12) {
             setHasMore(false);
         }
-
       } catch (err) {
         console.error(err);
         message.error('加载商品失败');
@@ -75,52 +59,133 @@ const ProductList = () => {
         setLoading(false);
       }
     };
-
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, keyword]); // Re-run when page or keyword changes
+  }, [page, keyword]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0, scale: 0.98 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 100 }
+    }
+  };
 
   return (
-    <div style={{ padding: '40px 20px', maxWidth: 1400, margin: '0 auto' }}>
-      <div style={{ marginBottom: 30, textAlign: 'center' }}>
-        <Title level={2}>{keyword ? `"${keyword}" 的搜索结果` : '全部商品'}</Title>
-        <Text type="secondary">{keyword ? '找到心仪好物了吗？' : '精选好物，等你来挑'}</Text>
+    <div className="min-h-screen pb-20 bg-[#fcfcfc] relative overflow-hidden">
+      {/* 装饰性背景 */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-main opacity-40 -z-10" />
+      <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-orange-200/20 rounded-full blur-[100px] animate-float" />
+
+      {/* 1. Header Area */}
+      <div className="pt-24 pb-16 px-6 relative z-10">
+        <div className="max-w-[1400px] mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center justify-center gap-3 mb-4 text-orange-500 font-bold">
+               <ShoppingOutlined className="text-2xl" />
+               <span className="tracking-[0.3em] uppercase text-xs">Collection</span>
+            </div>
+            <Title className="!text-5xl !font-black !mb-6 tracking-tight">
+              {keyword ? (
+                <>搜索结果: <span className="text-gradient italic">"{keyword}"</span></>
+              ) : (
+                <>探索 <span className="text-gradient">全球好物</span></>
+              )}
+            </Title>
+            <div className="max-w-2xl mx-auto glass-card py-4 px-8 rounded-full flex items-center justify-between shadow-lg">
+               <div className="flex items-center gap-3">
+                 <SearchOutlined className="text-gray-400 text-lg" />
+                 <Text className="text-gray-500">
+                   {keyword ? `为您找到 ${products.length} 件相关单品` : '发现您的下一个心动单品'}
+                 </Text>
+               </div>
+               <Tag color="orange" className="!m-0 rounded-full px-4 py-0.5 border-none font-bold">Premium List</Tag>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      {products.length === 0 && !loading ? (
-        <Empty description="暂无相关商品" />
-      ) : (
-        <Row gutter={[20, 24]}>
-          {products.map((product, index) => {
-            if (products.length === index + 1) {
-              return (
-                <Col ref={lastElementRef} xs={24} sm={12} md={8} lg={6} xl={6} key={product._id} style={{ display: 'flex', justifyContent: 'center' }}>
-                  <ProductCard product={product} />
-                </Col>
-              );
-            } else {
-              return (
-                <Col xs={24} sm={12} md={8} lg={6} xl={6} key={product._id} style={{ display: 'flex', justifyContent: 'center' }}>
-                   <ProductCard product={product} />
-                </Col>
-              );
-            }
-          })}
-        </Row>
-      )}
-      
-      {loading && (
-        <div style={{ textAlign: 'center', padding: 40 }}>
-           <Spin size="large" tip="加载更多..." />
+      {/* 2. Product Grid */}
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+        <AnimatePresence mode="popLayout">
+          {products.length === 0 && !loading ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-40"
+            >
+              <Empty 
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <div className="text-center">
+                    <Text className="text-xl text-gray-400 block mb-4">没有捕捉到相关商品...</Text>
+                    <Text type="secondary">换个关键词试试，或者浏览我们的推荐集合</Text>
+                  </div>
+                } 
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <Row gutter={[24, 40]}>
+                {products.map((product, index) => (
+                  <Col 
+                    key={product._id}
+                    ref={products.length === index + 1 ? lastElementRef : null}
+                    xs={24} sm={12} md={8} lg={6} xl={6}
+                    className="flex justify-center"
+                  >
+                    <motion.div 
+                      variants={itemVariants}
+                      layout
+                      className="w-full"
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
+                  </Col>
+                ))}
+              </Row>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Loading / End Indicators */}
+        <div className="text-center mt-20 h-20">
+          {loading && (
+             <div className="flex flex-col items-center gap-4">
+                <Spin indicator={<div className="w-8 h-8 rounded-full border-4 border-orange-500 border-t-transparent animate-spin" />} />
+                <Text type="secondary" className="font-medium animate-pulse">正在搜寻更多珍宝...</Text>
+             </div>
+          )}
+          {!hasMore && products.length > 0 && (
+             <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               className="flex items-center justify-center gap-4 opacity-50"
+             >
+               <div className="h-px bg-gray-300 w-12" />
+               <Text className="text-xs uppercase tracking-widest font-black">End of Collection</Text>
+               <div className="h-px bg-gray-300 w-12" />
+             </motion.div>
+          )}
         </div>
-      )}
-      
-      {!hasMore && products.length > 0 && (
-         <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
-           -- 已经到底啦 --
-         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Form, Input, Button, message, Card, Typography, Checkbox } from 'antd';
-import { UserOutlined, LockOutlined, TaobaoCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Button, message, Typography, Checkbox } from 'antd';
+import { UserOutlined, LockOutlined, TaobaoCircleOutlined, ArrowRightOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -11,96 +12,139 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-// ... (rest of the file until the anchor tag)
-// I will just replace the import and the anchor tag in one go or separate if needed. 
-// Let's use multi_replace for precision or just replace the chunks.
-// Actually, I can just replace the top import and the specific line for anchor.
-// But replace_file_content is single block.
-// I will use multi_replace_file_content.
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
       const res = await api.post('/login', values);
-      // 如果后端路由是 /login，请改回。根据之前 server.js 分析，auth 路由挂载在 /，但 auth.js 里是 /login。
-      // Wait, server.js says: app.use(authRouter.routes());
-      // auth.js says: router.post('/login', ...)
-      // So the path is /login. 
-      // BUT strict analysis: server.js: app.use(authRouter.routes()) with NO prefix for authRouter?
-      // server.js content:
-      // const authRouter = require('./routes/auth');
-      // app.use(authRouter.routes()).use(authRouter.allowedMethods());
-      // auth.js content: router.post('/login', ...)
-      // So URL is http://localhost:5000/login. 
-      
-      login(res.data.token,res.data.user)
-      message.success('登录成功');
+      login(res.data.token, res.data.user)
+      message.success('欢迎回来，尊贵的会员');
       navigate('/');
     } catch (err) {
       console.error(err);
-      message.error(err.response?.data?.msg || '登录失败，请检查账号密码');
+      message.error(err.response?.data?.msg || '验证未通过，请核对信息');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #ff9c6e 0%, #ff4d4f 100%)', // 淘宝橙红渐变
-      padding: 20
-    }}>
-      <Card 
-        style={{ width: 400, borderRadius: 16, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}
-        bodyStyle={{ padding: 40 }}
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
+      {/* 动态漫射背景层 */}
+      <div className="absolute inset-0 z-0">
+        <motion.div 
+           animate={{ 
+             scale: [1, 1.2, 1],
+             rotate: [0, 90, 0],
+             x: [0, 100, 0]
+           }}
+           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+           className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] bg-orange-600/20 rounded-full blur-[150px]"
+        />
+        <motion.div 
+           animate={{ 
+             scale: [1, 1.3, 1],
+             rotate: [90, 0, 90],
+             x: [0, -100, 0]
+           }}
+           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+           className="absolute -bottom-[20%] -right-[10%] w-[900px] h-[900px] bg-blue-600/10 rounded-full blur-[180px]"
+        />
+        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-pink-500/10 rounded-full blur-[120px] animate-pulse" />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 w-full max-w-[500px] px-6"
       >
-        <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <TaobaoCircleOutlined style={{ fontSize: 48, color: '#ff4d4f' }} />
-          <Title level={2} style={{ marginTop: 10, marginBottom: 0 }}>欢迎登录</Title>
-          <Text type="secondary">虽然是克隆版，但体验依然极致</Text>
-        </div>
+        <div className="glass-card rounded-[3.5rem] p-12 shadow-[0_40px_100px_rgba(0,0,0,0.4)] border-white/10 bg-white/5 backdrop-blur-3xl">
+          <div className="text-center mb-12">
+            <motion.div 
+              initial={{ rotate: -180, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 1 }}
+              className="inline-block p-4 rounded-3xl bg-gradient-to-br from-orange-500 to-red-600 mb-6 shadow-xl shadow-orange-500/20"
+            >
+              <TaobaoCircleOutlined style={{ fontSize: 40, color: '#fff' }} />
+            </motion.div>
+            <Title className="!text-white !font-black !mb-2 !text-4xl tracking-tighter italic">WELCOME BACK</Title>
+            <div className="flex justify-center gap-2 items-center mb-6">
+               <div className="h-px bg-white/10 w-12" />
+               <Text className="!text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">Security Portal</Text>
+               <div className="h-px bg-white/10 w-12" />
+            </div>
+            <div className="inline-block px-4 py-1 rounded-full bg-white/10 border border-white/20">
+               <Text className="!text-white/80 text-[10px] font-black uppercase tracking-[0.2em]">Premium Member Access</Text>
+            </div>
+          </div>
 
-        <Form
-          name="login"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          size="large"
-        >
-          <Form.Item
-            name="email"
-            rules={[{ required: true, message: '请输入邮箱!' }, { type: 'email', message: '邮箱格式不正确' }]}
+          <Form
+            name="login"
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            size="large"
+            layout="vertical"
+            className="premium-form"
           >
-            <Input prefix={<UserOutlined />} placeholder="请输入邮箱" />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: '请输入密码!' }]}
-          >
-            <Input.Password prefix={<LockOutlined />} placeholder="请输入密码" />
-          </Form.Item>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>记住我</Checkbox>
+            <Form.Item
+              name="email"
+              rules={[{ required: true, message: '请输入账户邮箱!' }, { type: 'email', message: '邮箱格式不规范' }]}
+            >
+              <Input 
+                prefix={<UserOutlined className="text-orange-500 mr-2" />} 
+                placeholder="EMAIL ADDRESS" 
+                className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
+              />
             </Form.Item>
-            <Link to="/forgot-password" style={{ color: '#ff4d4f' }}>忘记密码？</Link>
-          </div>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block loading={loading} style={{ background: '#ff4d4f', borderColor: '#ff4d4f' }}>
-              立即登录
-            </Button>
-          </Form.Item>
-          
-          <div style={{ textAlign: 'center' }}>
-            <Text>还没有账号？ <Link to="/register" style={{ color: '#ff4d4f' }}>立即注册</Link></Text>
-          </div>
-        </Form>
-      </Card>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: '请输入访问密码!' }]}
+            >
+              <Input.Password 
+                prefix={<LockOutlined className="text-orange-500 mr-2" />} 
+                placeholder="ACCESS PASSWORD" 
+                className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
+              />
+            </Form.Item>
+
+            <div className="flex justify-between items-center mb-10 px-2 mt-4">
+              <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Checkbox className="!text-white/40 font-bold text-xs uppercase tracking-widest">持续保持会话</Checkbox>
+              </Form.Item>
+              <Link to="/forgot-password" size="small" className="text-xs uppercase font-black text-orange-500 hover:text-orange-400 tracking-widest">
+                找回凭证 ?
+              </Link>
+            </div>
+
+            <Form.Item>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                block 
+                loading={loading} 
+                className="h-18 rounded-[1.25rem] bg-orange-500 border-none font-black text-lg tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-all shine-effect flex items-center justify-center gap-3"
+              >
+                AUTHORIZE <ArrowRightOutlined />
+              </Button>
+            </Form.Item>
+            
+            <div className="text-center mt-10">
+              <Text className="!text-white/30 text-xs font-bold uppercase tracking-widest">
+                NEW TO TAOBAO? <Link to="/register" className="text-white hover:text-orange-500 transition-colors ml-2">CREATE IDENTITY</Link>
+              </Text>
+            </div>
+          </Form>
+        </div>
+        
+        {/* 底部保障 */}
+        <div className="mt-12 flex justify-center gap-8 text-white/20 uppercase font-black text-[9px] tracking-[0.4em]">
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> SSL SECURE</div>
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> 256-BIT ENCRYPTION</div>
+        </div>
+      </motion.div>
     </div>
   );
 };
