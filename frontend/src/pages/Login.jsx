@@ -81,14 +81,14 @@ const Login = () => {
             >
               <TaobaoCircleOutlined style={{ fontSize: 40, color: '#fff' }} />
             </motion.div>
-            <Title className="!text-white !font-black !mb-2 !text-4xl tracking-tighter italic">WELCOME BACK</Title>
+            <Title className="!text-white !font-black !mb-2 !text-4xl tracking-tighter italic">欢迎回来</Title>
             <div className="flex justify-center gap-2 items-center mb-6">
                <div className="h-px bg-white/10 w-12" />
-               <Text className="!text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">Security Portal</Text>
+               <Text className="!text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">安全入口</Text>
                <div className="h-px bg-white/10 w-12" />
             </div>
             <div className="inline-block px-4 py-1 rounded-full bg-white/10 border border-white/20">
-               <Text className="!text-white/80 text-[10px] font-black uppercase tracking-[0.2em]">Premium Member Access</Text>
+               <Text className="!text-white/80 text-[10px] font-black uppercase tracking-[0.2em]">尊享会员接入</Text>
             </div>
           </div>
 
@@ -139,13 +139,13 @@ const Login = () => {
                 loading={loading} 
                 className="h-18 rounded-[1.25rem] bg-orange-500 border-none font-black text-lg tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-all shine-effect flex items-center justify-center gap-3"
               >
-                AUTHORIZE <ArrowRightOutlined />
+                授权登录 <ArrowRightOutlined />
               </Button>
             </Form.Item>
             
             <div className="text-center mt-10">
               <Text className="!text-white/30 text-xs font-bold uppercase tracking-widest">
-                NEW TO TAOBAO? <Link to="/register" className="text-white hover:text-orange-500 transition-colors ml-2">CREATE IDENTITY</Link>
+                还没有账号? <Link to="/register" className="text-white hover:text-orange-500 transition-colors ml-2">创建身份</Link>
               </Text>
             </div>
           </Form>
@@ -153,8 +153,8 @@ const Login = () => {
         
         {/* 底部保障 */}
         <div className="mt-12 flex justify-center gap-8 text-white/20 uppercase font-black text-[9px] tracking-[0.4em]">
-           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> SSL SECURE</div>
-           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> 256-BIT ENCRYPTION</div>
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> SSL 安全加密</div>
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> 256位深度加密</div>
         </div>
       </motion.div>
     </div>

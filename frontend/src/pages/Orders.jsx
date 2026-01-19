@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tag, Typography, Spin, Divider } from 'antd';
 import { ShoppingOutlined, ClockCircleOutlined, CheckCircleOutlined, CarOutlined, WalletOutlined, InboxOutlined } from '@ant-design/icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +8,7 @@ import api from '../utils/api';
 const { Title, Text } = Typography;
 
 const Orders = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,9 +54,9 @@ const Orders = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-block px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 text-xs font-black uppercase tracking-widest mb-4"
           >
-            Purchase History
+            购买记录
           </motion.div>
-          <Title className="!text-5xl !font-black !mb-2 tracking-tighter italic">MY ORDERS</Title>
+          <Title className="!text-5xl !font-black !mb-2 tracking-tighter italic">我的订单</Title>
           <Text className="text-gray-400 font-medium italic">记录您的每一次心动挑选</Text>
         </div>
 
@@ -83,7 +85,7 @@ const Orders = () => {
                     <div className="flex flex-wrap justify-between items-start gap-4 mb-10">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                          <Text className="text-[10px] font-black uppercase tracking-widest text-gray-300">Order Reference</Text>
+                          <Text className="text-[10px] font-black uppercase tracking-widest text-gray-300">订单编号</Text>
                           <Tag className="rounded-full border-none bg-gray-100 text-gray-500 font-mono font-bold px-3">
                             #{order._id.slice(-8).toUpperCase()}
                           </Tag>
@@ -125,7 +127,7 @@ const Orders = () => {
                               </Text>
                               <div className="h-4 w-px bg-gray-100" />
                               <Tag className="m-0 rounded-lg border-none bg-orange-50 text-orange-500 font-black text-[10px] py-0 px-2 uppercase tracking-widest">
-                                Certified
+                                官方认证
                               </Tag>
                             </div>
                           </div>
@@ -144,13 +146,13 @@ const Orders = () => {
                              <ClockCircleOutlined />
                           </div>
                           <div>
-                             <Text className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300">Estimated Delivery</Text>
+                             <Text className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300">预计送达</Text>
                              <Text className="font-bold text-gray-400 italic">常规物流派送中</Text>
                           </div>
                        </div>
                        
                        <div className="text-right">
-                          <Text className="block text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 mb-1">Final Transaction</Text>
+                          <Text className="block text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 mb-1">实付款 (含运费)</Text>
                           <div className="flex items-baseline gap-2">
                             <span className="text-xs font-black text-orange-500 italic">CNY</span>
                             <span className="text-4xl font-black tracking-tighter italic bg-gradient-to-br from-orange-500 to-red-600 bg-clip-text text-transparent">
@@ -170,8 +172,8 @@ const Orders = () => {
         )}
         
         <div className="mt-20 text-center pb-20">
-           <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white/60 border border-white/60 shadow-xl group cursor-pointer hover:bg-white transition-all">
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 group-hover:text-orange-500 transition-colors">Return to Marketplace</span>
+           <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white/60 border border-white/60 shadow-xl group cursor-pointer hover:bg-white transition-all" onClick={() => navigate('/')}>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 group-hover:text-orange-500 transition-colors">返回商城首页</span>
               <ShoppingOutlined className="text-gray-300 group-hover:text-orange-500 transition-colors" />
            </div>
         </div>

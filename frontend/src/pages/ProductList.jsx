@@ -105,7 +105,7 @@ const ProductList = () => {
           >
             <div className="flex items-center justify-center gap-3 mb-4 text-orange-500 font-bold">
                <ShoppingOutlined className="text-2xl" />
-               <span className="tracking-[0.3em] uppercase text-xs">Collection</span>
+               <span className="tracking-[0.3em] uppercase text-xs">甄选系列</span>
             </div>
             <Title className="!text-5xl !font-black !mb-6 tracking-tight">
               {keyword ? (
@@ -121,7 +121,7 @@ const ProductList = () => {
                    {keyword ? `为您找到 ${products.length} 件相关单品` : '发现您的下一个心动单品'}
                  </Text>
                </div>
-               <Tag color="orange" className="!m-0 rounded-full px-4 py-0.5 border-none font-bold">Premium List</Tag>
+                <Tag color="orange" className="!m-0 rounded-full px-4 py-0.5 border-none font-bold">精品名录</Tag>
             </div>
           </motion.div>
         </div>
@@ -207,7 +207,7 @@ const ProductList = () => {
                className="flex items-center justify-center gap-4 opacity-50"
              >
                <div className="h-px bg-gray-300 w-12" />
-               <Text className="text-xs uppercase tracking-widest font-black">End of Collection</Text>
+                <Text className="text-xs uppercase tracking-widest font-black">到底啦，这就是全部珍宝了</Text>
                <div className="h-px bg-gray-300 w-12" />
              </motion.div>
           )}
