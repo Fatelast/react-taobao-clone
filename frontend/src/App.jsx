@@ -17,6 +17,7 @@ const ProductList = lazy(() => import('./pages/ProductList'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Orders = lazy(() => import('./pages/Orders'));
+const AddressManagement = lazy(() => import('./pages/AddressManagement'));
 
 const { Content } = Layout;
 
@@ -53,6 +54,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute>
                 <PageTransition><Orders /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/address"
+            element={
+              <ProtectedRoute>
+                <PageTransition><AddressManagement /></PageTransition>
               </ProtectedRoute>
             }
           />

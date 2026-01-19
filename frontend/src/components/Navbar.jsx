@@ -36,6 +36,10 @@ const Navbar = () => {
       key: '1',
       label: <Link to="/orders">我的订单</Link>,
     },
+    {
+      key: 'address',
+      label: <Link to="/address">地址管理</Link>,
+    },
     ...(user && user.membershipTier !== 'ultra' ? [{
       key: 'upgrade',
       icon: <RocketOutlined />,
