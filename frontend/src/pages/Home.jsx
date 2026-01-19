@@ -64,8 +64,8 @@ const Home = () => {
                 animate={{ x: 0, opacity: 1, filter: "blur(0px)" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <Tag color="orange" className="mb-6 px-4 py-1.5 rounded-full border-none font-bold uppercase tracking-[0.2em] text-[10px] bg-white/50 backdrop-blur-sm shadow-sm">
-                  2026 Preview Collection
+                <Tag color="orange" className="!mb-[12px] px-4 py-1.5 rounded-full border-none font-bold uppercase tracking-[0.2em] text-[10px] bg-white/50 backdrop-blur-sm shadow-sm">
+                  2026 春季预售系列
                 </Tag>
                 <Title className="!text-7xl !font-black !mb-8 leading-[1.1] drop-shadow-sm tracking-tight text-[#1a1a1a]">
                   未来 <span className="text-gradient">购物世界</span><br />
@@ -126,7 +126,7 @@ const Home = () => {
           className="flex justify-between items-end mb-16"
         >
           <div>
-            <Title level={4} className="!text-orange-500 font-bold uppercase tracking-[0.3em] !m-0 !mb-4 border-l-4 border-orange-500 pl-6 h-6 flex items-center">Categories</Title>
+            <Title level={4} className="!text-orange-500 font-bold uppercase tracking-[0.3em] !m-0 !mb-4 border-l-4 border-orange-500 pl-6 h-6 flex items-center">品类中心</Title>
             <Title level={2} className="!m-0 !font-black !text-5xl tracking-tight">探索分类柜台</Title>
           </div>
         </motion.div>
@@ -208,7 +208,7 @@ const Home = () => {
             className="flex flex-col items-center text-center mb-24"
           >
             <div className="flex items-center gap-3 text-red-500 font-black mb-6 tracking-[0.2em] bg-red-50 px-6 py-2 rounded-full border border-red-100">
-               <FireOutlined /> <span>HOT RECOMMENDATION</span>
+               <FireOutlined /> <span>热门推荐</span>
             </div>
             <Title level={2} className="!font-black !text-6xl tracking-tight !mb-6">为您挑选的 <span className="text-gradient">热门单品</span></Title>
             <div className="w-24 h-1.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mt-4" />
@@ -297,7 +297,7 @@ const Home = () => {
                  size="large" 
                  className="h-20 px-20 relative z-10 border-2 border-white/20 text-white bg-white/5 backdrop-blur-md hover:!bg-white hover:!text-black transition-all font-black text-xl tracking-widest shine-effect"
                >
-                 立即加入 TAOBAO PREMIUM
+                 立即加入 TAOBAO 尊享会员
                </Button>
             </motion.div>
           </div>

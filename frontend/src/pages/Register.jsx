@@ -87,10 +87,10 @@ const Register = () => {
             >
               <TaobaoCircleOutlined style={{ fontSize: 40, color: '#fff' }} />
             </motion.div>
-            <Title className="!text-white !font-black !mb-2 !text-4xl tracking-tighter italic">CREATE IDENTITY</Title>
+            <Title className="!text-white !font-black !mb-2 !text-4xl tracking-tighter italic">创建身份</Title>
             <div className="flex justify-center gap-2 items-center">
                <div className="h-px bg-white/10 w-12" />
-               <Text className="!text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">New Member Portal</Text>
+               <Text className="!text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">新成员门户</Text>
                <div className="h-px bg-white/10 w-12" />
             </div>
           </div>
@@ -111,7 +111,7 @@ const Register = () => {
                 >
                   <Input 
                     prefix={<UserOutlined className="text-orange-500 mr-2" />} 
-                    placeholder="USERNAME" 
+                    placeholder="用户名 / USERNAME" 
                     className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
                   />
                 </Form.Item>
@@ -124,7 +124,7 @@ const Register = () => {
                 >
                   <Input 
                     prefix={<MailOutlined className="text-orange-500 mr-2" />} 
-                    placeholder="EMAIL ADDRESS" 
+                    placeholder="电子邮箱 / EMAIL" 
                     className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
                   />
                 </Form.Item>
@@ -138,7 +138,7 @@ const Register = () => {
                 >
                   <Input.Password 
                     prefix={<LockOutlined className="text-orange-500 mr-2" />} 
-                    placeholder="KEY" 
+                    placeholder="密码 / KEY" 
                     className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
                   />
                 </Form.Item>
@@ -161,7 +161,7 @@ const Register = () => {
                 >
                   <Input.Password 
                     prefix={<LockOutlined className="text-orange-500 mr-2" />} 
-                    placeholder="CONFIRM" 
+                    placeholder="确认密码 / CONFIRM" 
                     className="h-16 rounded-2xl bg-black/40 border-white/10 !text-white hover:border-orange-500/50 focus:border-orange-500 transition-all font-bold placeholder:text-white/20 shadow-inner"
                   />
                 </Form.Item>
@@ -176,7 +176,7 @@ const Register = () => {
                 loading={loading} 
                 className="h-18 rounded-[1.25rem] bg-orange-500 border-none font-black text-lg tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-all shine-effect flex items-center justify-center gap-3"
               >
-                GENERATE ACCOUNT <ArrowRightOutlined />
+                生成账号 <ArrowRightOutlined />
               </Button>
             </Form.Item>
             
@@ -190,8 +190,8 @@ const Register = () => {
         
         {/* 底部保障 */}
         <div className="mt-12 flex justify-center gap-8 text-white/20 uppercase font-black text-[9px] tracking-[0.4em]">
-           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> GLOBAL ENCRYPTION</div>
-           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> PRIVACY SECURED</div>
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> 全球加密保障</div>
+           <div className="flex items-center gap-2"><SafetyCertificateOutlined /> 隐私受控</div>
         </div>
       </motion.div>
     </div>

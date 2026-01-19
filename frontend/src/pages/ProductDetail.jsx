@@ -112,7 +112,7 @@ const ProductDetail = () => {
                 </div>
                 {/* 悬浮角标 */}
                 <div className="absolute top-8 right-8 flex flex-col gap-3">
-                   <Tag color="volcano" className="!m-0 rounded-full border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-lg">New Arrival</Tag>
+                   <Tag color="volcano" className="!m-0 rounded-full border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-lg">新品上市</Tag>
                    <Button shape="circle" icon={<HeartOutlined />} className="shadow-lg border-none hover:scale-110" />
                 </div>
              </motion.div>
@@ -143,7 +143,7 @@ const ProductDetail = () => {
                 <div className="absolute -right-20 -top-20 w-64 h-64 bg-orange-400/10 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-700" />
                 
                 <div className="relative z-10">
-                  <Text className="text-gray-400 uppercase tracking-[0.2em] text-[10px] font-black mb-2 block">Exclusive Price</Text>
+                  <Text className="text-gray-400 uppercase tracking-[0.2em] text-[10px] font-black mb-2 block">预估到手价</Text>
                   <div className="flex items-baseline gap-4">
                     <span className="text-gradient !text-5xl font-black">
                       <span className="text-2xl mr-1">¥</span>{product.price.toFixed(2)}
@@ -151,14 +151,14 @@ const ProductDetail = () => {
                     <Text delete className="text-gray-300 text-xl italic">
                       ¥{(product.price * 1.5).toFixed(2)}
                     </Text>
-                    <Tag color="red" className="!m-0 rounded-md border-none px-2 font-bold text-[10px] uppercase">Limited Offer</Tag>
+                    <Tag color="red" className="!m-0 rounded-md border-none px-2 font-bold text-[10px] uppercase">特惠中</Tag>
                   </div>
                 </div>
               </div>
 
               {/* 规格选择 */}
               <div className="mb-12">
-                <Title level={5} className="!font-black !mb-6 uppercase tracking-widest text-gray-400 !text-xs">Select Quantity</Title>
+                <Title level={5} className="!font-black !mb-6 uppercase tracking-widest text-gray-400 !text-xs">选择数量</Title>
                 <div className="flex items-center gap-6 glass-card w-fit px-6 py-3 rounded-2xl border-white/40">
                    <InputNumber 
                     min={1} 
@@ -221,7 +221,7 @@ const ProductDetail = () => {
            >
               <div className="flex items-center gap-4 mb-16">
                  <div className="h-px bg-gray-200 flex-1" />
-                 <Title level={2} className="!m-0 !font-black !text-4xl px-8 uppercase tracking-tighter italic">Product Story</Title>
+                 <Title level={2} className="!m-0 !font-black !text-4xl px-8 uppercase tracking-tighter italic">宝贝详情</Title>
                  <div className="h-px bg-gray-200 flex-1" />
               </div>
               

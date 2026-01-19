@@ -148,7 +148,7 @@ const Cart = () => {
              <ShoppingCartOutlined className="text-3xl text-white relative z-10" />
           </div>
           <div>
-            <Title className="!text-5xl !font-black !mb-2 tracking-tighter uppercase italic !text-gray-900">Shopping Cart</Title>
+            <Title className="!text-5xl !font-black !mb-2 tracking-tighter uppercase italic !text-gray-900">我的购物车</Title>
             <Text className="text-gray-500 font-bold tracking-widest uppercase text-[10px] border-l-2 border-orange-500 pl-4">您的私人珍宝库 ({cartItems.length} 件商品)</Text>
           </div>
         </motion.div>
@@ -198,24 +198,24 @@ const Cart = () => {
                    
                    <Title level={4} className="!text-white/90 !font-black !mb-10 uppercase tracking-[0.3em] !text-[11px] opacity-100 flex items-center gap-2">
                      <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-                     Financial Summary
+                     结算清单
                    </Title>
                    
                    <div className="flex flex-col gap-6 mb-12 relative z-10">
                       <div className="flex justify-between items-center">
-                         <Text className="!text-white/70 font-bold text-sm uppercase tracking-wider">Subtotal Items</Text>
+                         <Text className="!text-white/70 font-bold text-sm uppercase tracking-wider">商品总额</Text>
                          <Text className="!text-white text-lg font-mono font-black">¥{totalPrice.toFixed(2)}</Text>
                       </div>
                       <div className="flex justify-between items-center">
-                         <Text className="!text-white/70 font-bold text-sm uppercase tracking-wider">Express Delivery</Text>
-                         <Text className="text-sm uppercase !text-white font-mono font-black tracking-tighter">Free of Charge</Text>
+                         <Text className="!text-white/70 font-bold text-sm uppercase tracking-wider">物流运费</Text>
+                         <Text className="text-sm uppercase !text-white font-mono font-black tracking-tighter">免运费</Text>
                       </div>
                       <Divider className="border-white/10 !m-0" />
                       <div className="flex flex-col gap-3 mt-2">
-                         <Text className="!text-white/60 uppercase font-black tracking-[0.2em] text-[10px]">Total Payable Amount</Text>
+                         <Text className="!text-white/60 uppercase font-black tracking-[0.2em] text-[10px]">应付总额</Text>
                          <div className="flex items-center gap-1 overflow-hidden">
                             <Text className="text-gradient !text-4xl font-black whitespace-nowrap leading-none transition-all tracking-tighter drop-shadow-2xl">
-                              ¥{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                               ¥{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </Text>
                          </div>
                       </div>
@@ -228,7 +228,7 @@ const Cart = () => {
                      loading={checkoutLoading}
                      className="h-20 w-full rounded-[1.5rem] bg-orange-500 border-none font-black text-xl tracking-widest shadow-xl hover:scale-105 transition-all shine-effect flex items-center justify-center gap-3"
                    >
-                     <CreditCardOutlined /> SECURE CHECKOUT
+                     <CreditCardOutlined /> 安全结算
                    </Button>
                 </div>
 
@@ -239,7 +239,7 @@ const Cart = () => {
                        </div>
                        <div>
                           <Text className="font-black text-sm block">100% 安全支付保障</Text>
-                          <Text className="text-gray-400 text-xs uppercase tracking-widest">SSL Encrypted Transaction</Text>
+                          <Text className="text-gray-400 text-xs uppercase tracking-widest">SSL 全程加密交易</Text>
                        </div>
                     </div>
                 </div>
