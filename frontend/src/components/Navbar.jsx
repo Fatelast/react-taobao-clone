@@ -1,5 +1,5 @@
-import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar, Input } from 'antd';
-import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar } from 'antd';
+import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, RocketOutlined, SearchOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -7,7 +7,8 @@ import { useCart } from '../context/CartContext';
 import '../scss/navbar.scss';
 
 const { Header } = Layout;
-const { Search } = Input;
+
+// 移除旧的 MembershipBadge 组件
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -35,6 +36,15 @@ const Navbar = () => {
       key: '1',
       label: <Link to="/orders">我的订单</Link>,
     },
+    ...(user && user.membershipTier !== 'ultra' ? [{
+      key: 'upgrade',
+      icon: <RocketOutlined />,
+      label: (
+        <span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent font-black">
+          升级会员
+        </span>
+      ),
+    }] : []),
     {
       key: '2',
       label: <span onClick={handleLogout}>退出登录</span>,
@@ -51,17 +61,30 @@ const Navbar = () => {
         <Link to="/" className="text-red-500 hover:text-red-600 flex items-center h-full">Taobao Clone</Link>
       </div>
 
-      {/* Search Bar - Center */}
-      <div className="flex-1 max-w-[600px] mx-5 flex items-center">
-         <Search 
-            placeholder="搜索商品..." 
-            onSearch={onSearch} 
-            className='search-input'
-            enterButton 
-            size="large" 
-            style={{ borderRadius: '20px' }}
-         />
-      </div>
+      {/* Search Bar - Absolute Center */}
+      {location.pathname !== '/products' && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] z-50">
+          <div className="search-promax-container group">
+            <SearchOutlined className="search-icon-left" />
+            <input 
+              type="text" 
+              placeholder="搜索发现全球好物..." 
+              className="search-promax-input"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onSearch(e.target.value);
+                }
+              }}
+            />
+            <div className="search-btn-right" onClick={(e) => {
+                const input = e.currentTarget.previousSibling;
+                onSearch(input.value);
+            }}>
+              <SearchOutlined />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Right Menu */}
       <div className="flex items-center gap-4">
@@ -94,8 +117,23 @@ const Navbar = () => {
         
         {user ? (
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-            <div className="cursor-pointer ml-2 flex items-center">
-               <Avatar className="bg-red-500" icon={<UserOutlined />} />
+            <div className={`membership-avatar-wrapper tier-${user.membershipTier || 'basic'} cursor-pointer`}>
+               {/* 左侧文字识别区 */}
+               <span className={`tier-text ${user.membershipTier || 'basic'}-text`}>
+                 {user.membershipTier === 'ultra' ? 'ULTRA' : 
+                  user.membershipTier === 'pro' ? 'PRO' : 'BASIC'}
+               </span>
+
+               {/* 几何校准的核心：独立的光环锚点容器 */}
+               <div className="avatar-aura-anchor">
+                  <div className="halo-ring"></div>
+                  <div className="avatar-inner">
+                     <Avatar 
+                       className={user.membershipTier === 'ultra' ? 'bg-gray-900 border border-yellow-500/20' : 'bg-red-500'} 
+                       icon={<UserOutlined />} 
+                     />
+                  </div>
+               </div>
             </div>
           </Dropdown>
         ) : (

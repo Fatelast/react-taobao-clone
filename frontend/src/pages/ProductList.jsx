@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingOutlined, SearchOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -14,7 +14,15 @@ const ProductList = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const keyword = searchParams.get('keyword') || '';
+  
+  // Tag 筛选状态
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState(null);
+  
+  // 本地搜索状态
+  const [localKeyword, setLocalKeyword] = useState(keyword);
   
   const observer = useRef();
   
@@ -39,7 +47,8 @@ const ProductList = () => {
     setLoading(true);
     try {
       const currentPage = isNewSearch ? 1 : page;
-      const res = await api.get(`/products?page=${currentPage}&limit=12&keyword=${encodeURIComponent(keyword)}`);
+      const tagParam = selectedTag ? `&tag=${encodeURIComponent(selectedTag)}` : '';
+      const res = await api.get(`/products?page=${currentPage}&limit=12&keyword=${encodeURIComponent(keyword)}${tagParam}`);
       const newProducts = res.data.products || [];
       
       setProducts(prev => {
@@ -57,19 +66,37 @@ const ProductList = () => {
       setLoading(false);
       isFetchingRef.current = false;
     }
-  }, [page, keyword]); // 彻底移除 loading 依赖，防止死锁循环
+  }, [page, keyword, selectedTag]); // 彻底移除 loading 依赖，防止死锁循环
+
+  // 获取所有可用 Tag
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await api.get('/products/tags');
+        setAvailableTags(res.data || []);
+      } catch (err) {
+        console.error('Fetch Tags Error:', err);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  // 同步 URL keyword 到 localKeyword
+  useEffect(() => {
+    setLocalKeyword(keyword);
+  }, [keyword]);
 
   // 处理搜索关键字变化：立即重置
   useEffect(() => {
     setProducts([]);
     setPage(1);
     setHasMore(true);
-  }, [keyword]);
+  }, [keyword, selectedTag]); // 增加 selectedTag 依赖
 
   // 处理分页加载
   useEffect(() => {
     fetchProducts(page === 1);
-  }, [page, keyword, fetchProducts]);
+  }, [page, keyword, selectedTag, fetchProducts]); // 增加 selectedTag 依赖
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -114,16 +141,73 @@ const ProductList = () => {
                 <>探索 <span className="text-gradient">全球好物</span></>
               )}
             </Title>
-            <div className="max-w-2xl mx-auto glass-card py-4 px-8 rounded-full flex items-center justify-between shadow-lg">
-               <div className="flex items-center gap-3">
-                 <SearchOutlined className="text-gray-400 text-lg" />
-                 <Text className="text-gray-500">
-                   {keyword ? `为您找到 ${products.length} 件相关单品` : '发现您的下一个心动单品'}
-                 </Text>
-               </div>
-                <Tag color="orange" className="!m-0 rounded-full px-4 py-0.5 border-none font-bold">精品名录</Tag>
+            <div className="max-w-2xl mx-auto glass-card py-4 px-8 rounded-full flex items-center justify-between shadow-lg relative group transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:shadow-xl focus-within:shadow-[0_0_0_3px_rgba(255,106,0,0.15),0_10px_40px_rgba(255,106,0,0.2)] focus-within:scale-[1.02]">
+               {/* 搜索图标 - 单个，左侧固定 */}
+               <SearchOutlined className="text-gray-400 text-lg mr-3 transition-colors duration-300 group-focus-within:text-orange-500" />
+               
+               {/* 搜索输入框 */}
+               <input
+                 type="text"
+                 placeholder={keyword ? `为您找到 ${products.length} 件相关单品` : '发现您的下一个心动单品'}
+                 value={localKeyword}
+                 onChange={(e) => setLocalKeyword(e.target.value)}
+                 onKeyDown={(e) => {
+                   if (e.key === 'Enter') {
+                     const trimmedValue = localKeyword.trim();
+                     if (trimmedValue) {
+                       navigate(`/products?keyword=${encodeURIComponent(trimmedValue)}`);
+                     } else {
+                       navigate('/products'); // 清空搜索
+                     }
+                   }
+                 }}
+                 className="flex-1 bg-transparent border-none outline-none text-gray-700 placeholder:text-gray-400 text-sm font-medium"
+                 style={{ WebkitAppearance: 'none' }}
+               />
+               
+               {/* 标签 */}
+               <Tag color="orange" className="!m-0 rounded-full px-4 py-0.5 border-none font-bold ml-3">精品名录</Tag>
             </div>
           </motion.div>
+
+          {/* Tag 筛选器 */}
+          {availableTags.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-10 flex justify-center"
+            >
+              <div className="glass-card px-8 py-5 rounded-[2rem] shadow-lg flex flex-wrap gap-3 items-center max-w-4xl">
+                <Text className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mr-3">筛选:</Text>
+                <Tag
+                  className="!m-0 rounded-full px-5 py-1.5 cursor-pointer transition-all hover:scale-105 font-bold uppercase text-xs tracking-wider"
+                  color={!selectedTag ? "orange" : "default"}
+                  style={{
+                    borderWidth: !selectedTag ? 2 : 1,
+                    boxShadow: !selectedTag ? '0 4px 15px rgba(255, 106, 0, 0.3)' : 'none'
+                  }}
+                  onClick={() => setSelectedTag(null)}
+                >
+                  全部
+                </Tag>
+                {availableTags.map(tag => (
+                  <Tag
+                    key={tag}
+                    className="!m-0 rounded-full px-5 py-1.5 cursor-pointer transition-all hover:scale-105 font-bold uppercase text-xs tracking-wider"
+                    color={selectedTag === tag ? "orange" : "default"}
+                    style={{
+                      borderWidth: selectedTag === tag ? 2 : 1,
+                      boxShadow: selectedTag === tag ? '0 4px 15px rgba(255, 106, 0, 0.3)' : 'none'
+                    }}
+                    onClick={() => setSelectedTag(tag)}
+                  >
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -162,7 +246,7 @@ const ProductList = () => {
               </motion.div>
             ) : products.length > 0 ? (
               <motion.div
-                key="product-grid"
+                key={`product-grid-${selectedTag || 'all'}-${keyword || 'none'}`}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
