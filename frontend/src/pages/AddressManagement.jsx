@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { 
-    Card, Button, Form, Input, Modal, message, Cascader, 
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+    Card, Button, Form, Input, Modal, Cascader,
     Space, Empty, Popconfirm, Typography, Divider, Checkbox
 } from 'antd';
 import { 
@@ -10,8 +10,10 @@ import {
 } from '@ant-design/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
+import { useToast } from '../context/ToastContext';
 
 const AddressManagement = () => {
+    const toast = useToast();
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -20,24 +22,19 @@ const AddressManagement = () => {
     const [areaOptions, setAreaOptions] = useState([]);
     const [smartInput, setSmartInput] = useState('');
 
-    useEffect(() => {
-        fetchAddresses();
-        fetchAreaOptions();
-    }, []);
-
-    const fetchAddresses = async () => {
+    const fetchAddresses = useCallback(async () => {
         setLoading(true);
         try {
             const res = await api.get('/address');
             setAddresses(res.data);
         } catch (error) {
-            message.error('加载地址失败');
+            toast.error('加载地址失败');
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
 
-    const fetchAreaOptions = async () => {
+    const fetchAreaOptions = useCallback(async () => {
         try {
             // 先加载省份
             const res = await api.get('/areas/provinces');
@@ -51,7 +48,12 @@ const AddressManagement = () => {
         } catch (error) {
             console.error('Error fetching areas:', error);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchAddresses();
+        fetchAreaOptions();
+    }, [fetchAddresses, fetchAreaOptions]);
 
     const loadData = async (selectedOptions) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
@@ -83,36 +85,36 @@ const AddressManagement = () => {
 
             if (editingAddress) {
                 await api.put(`/address/${editingAddress._id}`, payload);
-                message.success('地址修改成功');
+                toast.success('地址修改成功');
             } else {
                 await api.post('/address', payload);
-                message.success('地址添加成功');
+                toast.success('地址添加成功');
             }
             setIsModalVisible(false);
             form.resetFields();
             fetchAddresses();
         } catch (error) {
-            message.error(error.response?.data?.msg || '操作失败');
+            toast.error(error.response?.data?.msg || '操作失败');
         }
     };
 
     const handleDelete = async (id) => {
         try {
             await api.delete(`/address/${id}`);
-            message.success('地址已删除');
+            toast.success('地址已删除');
             fetchAddresses();
         } catch (error) {
-            message.error('删除失败');
+            toast.error('删除失败');
         }
     };
 
     const handleSetDefault = async (id) => {
         try {
             await api.patch(`/address/${id}/default`, {});
-            message.success('已设为默认地址');
+            toast.success('已设为默认地址');
             fetchAddresses();
         } catch (error) {
-            message.error('操作失败');
+            toast.error('操作失败');
         }
     };
 
@@ -148,7 +150,7 @@ const AddressManagement = () => {
             phoneNumber,
             detailAddress
         });
-        message.info('智能识别完成，请选择省市区并完善信息');
+        toast.info('智能识别完成，请选择省市区并完善信息');
     };
 
     const openModal = (address = null) => {

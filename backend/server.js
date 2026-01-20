@@ -19,6 +19,7 @@ const cartRouter = require('./routes/cart');
 const ordersRouter = require('./routes/orders');
 const addressRouter = require('./routes/address');
 const areaRouter = require('./routes/area');
+const reviewRouter = require('./routes/review');
 
 app.use(authRouter.routes()).use(authRouter.allowedMethods());
 app.use(productsRouter.prefix('/products').routes()).use(productsRouter.allowedMethods());
@@ -26,6 +27,7 @@ app.use(cartRouter.prefix('/cart').routes()).use(cartRouter.allowedMethods());
 app.use(ordersRouter.prefix('/orders').routes()).use(ordersRouter.allowedMethods());
 app.use(addressRouter.prefix('/address').routes()).use(addressRouter.allowedMethods());
 app.use(areaRouter.prefix('/areas').routes()).use(areaRouter.allowedMethods());
+app.use(reviewRouter.prefix('/reviews').routes()).use(reviewRouter.allowedMethods());
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

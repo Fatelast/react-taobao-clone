@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Form, Input, Button, message, Typography, Row, Col, ConfigProvider, theme } from 'antd';
+import { Form, Input, Button, Typography, Row, Col, ConfigProvider, theme } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TaobaoCircleOutlined, ArrowRightOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const { Title, Text } = Typography;
 
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
@@ -19,11 +21,10 @@ const Register = () => {
       // 注册请求
       const res = await api.post('/register', values);
       
-      // 注册成功后立即视为同步登录
       const { token, user: userData } = res.data;
       login(token, userData);
       
-      message.success('身份生成成功！正在同步权限...', 1);
+      toast.success('身份生成成功！正在同步权限...');
       
       // 稍作延迟以获得更顺滑的视觉反馈
       setTimeout(() => {
@@ -32,7 +33,7 @@ const Register = () => {
       
     } catch (err) {
       console.error('Registration Security Exception:', err);
-      message.error(err.extractedMsg || '安全协议建立失败，请稍后重试');
+      toast.error(err.extractedMsg || '安全协议建立失败，请稍后重试');
     } finally {
       setLoading(false);
     }

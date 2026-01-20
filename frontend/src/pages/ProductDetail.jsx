@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Row, Col, Typography, Button, Space, Rate, Divider, Image, Spin, message, InputNumber, Tag, Empty } from 'antd';
+import { Row, Col, Typography, Button, Space, Rate, Divider, Image, Spin, InputNumber, Tag, Empty } from 'antd';
 import { ShoppingCartOutlined, SafetyCertificateOutlined, ArrowLeftOutlined, ThunderboltOutlined, HeartOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import ProductReviews from '../components/ProductReviews';
+import { useToast } from '../context/ToastContext';
 
 // 极致轻量化占位图 (PRO MAX)
 const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f9fafb'/%3E%3Ctext y='50%25' x='50%25' font-size='20' text-anchor='middle' dominant-baseline='central' fill='%239ca3af' font-family='sans-serif'%3E暂无图片%3C/text%3E%3C/svg%3E";
@@ -15,6 +17,7 @@ const { Title, Text } = Typography;
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
@@ -28,17 +31,16 @@ const ProductDetail = () => {
         setProduct(res.data);
       } catch (err) {
         console.error(err);
-        message.error('加载商品详情失败');
+        toast.error('加载商品详情失败');
       } finally {
         setLoading(false);
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, toast]);
 
   const handleAddToCart = async () => {
     if (!user) {
-      message.info('请先登录');
       navigate('/login');
       return;
     }
@@ -47,7 +49,6 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
      if (!user) {
-      message.info('请先登录');
       navigate('/login');
       return;
     }
@@ -246,6 +247,9 @@ const ProductDetail = () => {
               </div>
            </motion.div>
         </section>
+
+        {/* 用户评价模块 (UIUXPROMAX) */}
+        <ProductReviews productId={id} />
       </div>
     </div>
   );

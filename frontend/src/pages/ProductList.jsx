@@ -1,14 +1,16 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Row, Col, message, Typography, Spin, Empty, Tag } from 'antd';
+import { Row, Col, Typography, Spin, Empty, Tag } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingOutlined, SearchOutlined } from '@ant-design/icons';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const { Title, Text } = Typography;
 
 const ProductList = () => {
+  const toast = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -61,7 +63,7 @@ const ProductList = () => {
       setHasMore(!(res.data.page >= res.data.pages || newProducts.length < 12));
     } catch (err) {
       console.error('Fetch Error:', err);
-      message.error('加载商品失败');
+      toast.error('加载商品失败');
     } finally {
       setLoading(false);
       isFetchingRef.current = false;

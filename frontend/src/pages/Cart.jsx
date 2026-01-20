@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Table, Button, InputNumber, Typography, Popconfirm, Spin, Tag, Divider, Row, Col, message } from 'antd';
+import { Table, Button, InputNumber, Typography, Popconfirm, Spin, Tag, Divider, Row, Col } from 'antd';
 import { DeleteOutlined, ShoppingCartOutlined, CreditCardOutlined, SafetyOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 
 const { Title, Text } = Typography;
 
 const Cart = () => {
   const { cartItems, loading, updateQuantity, removeFromCart, clearCart } = useCart();
+  const toast = useToast();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,10 +22,10 @@ const Cart = () => {
     try {
       await api.post('/orders');
       await clearCart(); 
-      message.success('支付成功，正在为您准备商品');
+      toast.success('支付成功，正在为您准备商品');
       navigate('/orders');
     } catch (err) {
-      message.error(err.response?.data?.msg || '下单失败');
+      toast.error(err.response?.data?.msg || '下单失败');
     } finally {
       setCheckoutLoading(false);
     }

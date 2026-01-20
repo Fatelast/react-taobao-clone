@@ -1,12 +1,13 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
 import { useAuth } from './AuthContext';
-import { message } from 'antd';
+import { useToast } from './ToastContext';
 
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
+  const toast = useToast();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -34,16 +35,16 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (productId, quantity = 1) => {
     if (!user) {
-      message.info('请先登录');
+      toast.info('请先登录');
       return false; // Indicate failure/need login
     }
     try {
       await api.post('/cart/add', { productId, quantity });
-      message.success('已加入购物车');
+      toast.success('已加入购物车');
       await fetchCart(); // Refresh cart to get updated quantities
       return true;
     } catch (err) {
-      message.error(err.response?.data?.msg || '加入失败');
+      toast.error(err.response?.data?.msg || '加入失败');
       return false;
     }
   };
@@ -53,27 +54,27 @@ export const CartProvider = ({ children }) => {
       await api.put('/cart/update', { productId, quantity });
       await fetchCart();
     } catch (err) {
-      message.error('更新失败');
+      toast.error('更新失败');
     }
   };
 
   const removeFromCart = async (productId) => {
     try {
       await api.delete(`/cart/remove/${productId}`);
-      message.success('商品已删除');
+      toast.success('商品已删除');
       await fetchCart();
     } catch (err) {
-      message.error('删除失败');
+      toast.error('删除失败');
     }
   };
 
   const clearCart = async () => {
     try {
       await api.delete('/cart/clear');
-      message.success('购物车已清空');
+      toast.success('购物车已清空');
       setCartItems([]);
     } catch (err) {
-      message.error('清空失败');
+      toast.error('清空失败');
     }
   };
 

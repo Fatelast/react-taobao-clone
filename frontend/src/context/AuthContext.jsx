@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
-import { message } from 'antd';
+import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const toast = useToast();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     // localStorage.removeItem('user'); // We stop using 'user' in localStorage, rely on State
     setUser(null);
-    message.success('已退出登录');
+    toast.success('已退出登录');
   };
 
   return (

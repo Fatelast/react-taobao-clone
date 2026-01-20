@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Form, Input, Button, message, Typography, Checkbox, ConfigProvider, theme } from 'antd';
+import { Form, Input, Button, Typography, Checkbox, ConfigProvider, theme } from 'antd';
 import { UserOutlined, LockOutlined, TaobaoCircleOutlined, ArrowRightOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const { Title, Text } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
@@ -18,14 +20,14 @@ const Login = () => {
     try {
       const res = await api.post('/login', values);
       login(res.data.token, res.data.user)
-      message.success('身份验证通过，欢迎回来', 1);
+      toast.success('身份验证通过，欢迎回来');
       
       setTimeout(() => {
         navigate('/');
       }, 500);
     } catch (err) {
       console.error('Login Security Exception:', err);
-      message.error(err.extractedMsg || '凭证验证未通过，请核对信息');
+      toast.error(err.extractedMsg || '凭证验证未通过，请核对信息');
     } finally {
       setLoading(false);
     }

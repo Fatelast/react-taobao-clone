@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Card, Typography, message, Badge, Image } from 'antd';
+import { Card, Typography, Badge, Image } from 'antd';
 import { ShoppingCartOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,7 +31,6 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
     
     if (!user) {
-      message.info('请先登录');
       navigate('/login');
       return;
     }

@@ -8,6 +8,7 @@ import CustomCursor from './components/CustomCursor';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ToastProvider } from './context/ToastContext';
 
 // 架构优化：路由懒加载 (Code Splitting)
 const Home = lazy(() => import('./pages/Home'));
@@ -73,20 +74,22 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <CustomCursor />
-        <Router>
-          <Layout className="min-h-screen">
-            <Navbar />
-            <Content className="pt-[72px]">
-              <AnimatedRoutes />
-            </Content>
-          </Layout>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <CartProvider>
+          <CustomCursor />
+          <Router>
+            <Layout className="min-h-screen">
+              <Navbar />
+              <Content className="pt-[72px]">
+                <AnimatedRoutes />
+              </Content>
+            </Layout>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
-}
+};
 
 export default App;
