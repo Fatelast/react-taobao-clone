@@ -79,7 +79,7 @@ const App = () => {
         <Router>
           <Layout className="min-h-screen">
             <Navbar />
-            <Content>
+            <Content className="pt-[72px]">
               <AnimatedRoutes />
             </Content>
           </Layout>

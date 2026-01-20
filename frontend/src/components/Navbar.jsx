@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Badge, Dropdown, Space, Avatar } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, HomeOutlined, AppstoreOutlined, RocketOutlined, SearchOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -11,7 +12,17 @@ const { Header } = Layout;
 // 移除旧的 MembershipBadge 组件
 
 const Navbar = () => {
-  const navigate = useNavigate();
+    const [isScrolled, setIsScrolled] = useState(false);
+    
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
   const { cartItems } = useCart();
@@ -57,8 +68,7 @@ const Navbar = () => {
 
   return (
     <Header 
-      style={{ background: '#fff', padding: '0 20px', height: 64, lineHeight: '64px' }} 
-      className="flex items-center justify-between shadow-sm sticky top-0 z-[1000]"
+      className={`navbar-promax-fixed ${isScrolled ? 'is-scrolled' : ''}`}
     >
       {/* Logo */}
       <div className="text-2xl font-bold mr-5 shrink-0 flex items-center">
@@ -106,6 +116,7 @@ const Navbar = () => {
 
         <Link to="/cart" className="flex items-center">
           <motion.div
+             id="cart-icon-target"
              key={cartCount}
              initial={{ scale: 1 }}
              animate={{ scale: [1, 1.2, 1] }}

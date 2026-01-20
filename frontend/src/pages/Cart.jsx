@@ -134,8 +134,9 @@ const Cart = () => {
   return (
     <div className="min-h-screen pb-32 bg-[#fcfcfc] relative overflow-hidden">
       {/* 装饰背景 */}
+      {/* 装饰背景 */}
       <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-main opacity-30 -z-10" />
-      <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-orange-200/20 rounded-full blur-[120px] -z-10 animate-float" />
+      <div className="absolute top-[20%] right-0 translate-x-[30%] w-[500px] h-[500px] bg-orange-200/20 rounded-full blur-[120px] -z-10 animate-float" />
 
       <div className="max-w-[1400px] mx-auto pt-24 px-6 relative z-10">
         <motion.div 
